@@ -22,14 +22,11 @@ package body BBS.lisp.embed is
    --
    procedure init is
    begin
---      BBS.lisp.add_builtin("due-flash", due_flash'Access);
       BBS.lisp.add_builtin("set-pin", BBS.lisp.embed.gpio.set_pin'Access);
       BBS.lisp.add_builtin("pin-mode", BBS.lisp.embed.gpio.pin_mode'Access);
       BBS.lisp.add_builtin("pin-pullup", BBS.lisp.embed.gpio.pin_pullup'Access);
       BBS.lisp.add_builtin("read-pin", BBS.lisp.embed.gpio.read_pin'Access);
       BBS.lisp.add_builtin("read-analog", read_analog'Access);
---      BBS.lisp.add_builtin("info-enable", info_enable'Access);
---      BBS.lisp.add_builtin("info-disable", info_disable'Access);
       BBS.lisp.add_builtin("read-bme280", BBS.lisp.embed.bme280.read_bme280'Access);
       BBS.lisp.add_builtin("read-bme280-raw", BBS.lisp.embed.bme280.read_bme280_raw'Access);
       BBS.lisp.add_builtin("read-bmp180", BBS.lisp.embed.bmp180.read_bmp180'Access);
@@ -111,37 +108,6 @@ package body BBS.lisp.embed is
    --
    --  Functions for custom lisp commands for the Arduino Due
    --
-   --
-   --  Simple lisp function to set the number of times to quickly flash the LED.
-   --
---   procedure due_flash(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index) is
---      param : BBS.lisp.element_type;
---      rest : BBS.lisp.cons_index := s;
---   begin
-      --
-      --  Get the first value
-      --
---      param := BBS.lisp.evaluate.first_value(rest);
-      --
-      --  Check if the first value is an integer element.
-      --
---      if param.kind = BBS.lisp.E_VALUE then
---         if param.v.kind = BBS.lisp.V_INTEGER then
---            utils.flash_count := Integer(param.v.i);
---         else
---            BBS.lisp.error("due-flash", "Parameter must be integer.");
---            e := (kind => BBS.lisp.E_ERROR);
---            return;
---         end if;
---      else
---         BBS.lisp.error("due-flash", "Parameter must be an element.");
---         BBS.lisp.print(param, False, True);
---         e := (kind => BBS.lisp.E_ERROR);
---         return;
---      end if;
---      e := BBS.lisp.NIL_ELEM;
---   end;
-   --
    --  Read the value of one of the analog inputs.
    --
    procedure read_analog(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index) is
@@ -190,9 +156,7 @@ package body BBS.lisp.embed is
       else
          e := (kind => BBS.lisp.E_ERROR);
       end if;
---      return el;
    end;
-   --
    --
    --  Read the value of one of the analog inputs.
    --
@@ -201,23 +165,5 @@ package body BBS.lisp.embed is
    begin
       e := BBS.lisp.NIL_ELEM;
    end;
-   --
-   --  Enable display of info messages
-   --
---   procedure info_enable(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index) is
---      pragma Unreferenced (s);
---   begin
---      utils.info.enable;
---      e := BBS.lisp.NIL_ELEM;
---   end;
-   --
-   --  Disable display of info messages
-   --
---   procedure info_disable(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index) is
---      pragma Unreferenced (s);
---   begin
---      utils.info.disable;
---      e := BBS.lisp.NIL_ELEM;
---   end;
    --
 end BBS.lisp.embed;

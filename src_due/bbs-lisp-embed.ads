@@ -40,13 +40,7 @@ private
    --
    --  Functions for custom lisp operations for the Arduino Due
    --
-   --  Currently defined lisp operations are:
-   --
---   procedure due_flash(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index);
-   --  (due-flash integer)
-   --    Sets the flash count for the LED flashing task.  A simple, proof-of-
-   --    concept lisp operation.  Returns NIL.
-   --
+   --  Currently defined lisp operations in this package are:
    --
    --  Read the value of one of the analog inputs.
    --
@@ -64,10 +58,5 @@ private
    --    integer is the value to write to the output, range limited to 0-4095.
    --    Returns NIL.
    --
---   procedure info_enable(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index);
---   procedure info_disable(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index);
-   --
-   --  (info-enable) and (info-disable)
-   --    Enable or disable the display of info messages.  Both return NIL.
 
 end BBS.lisp.embed;
