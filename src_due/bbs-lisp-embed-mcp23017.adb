@@ -69,7 +69,7 @@ package body BBS.lisp.embed.mcp23017 is
 
    --
    --  Set direction of bits in the MCP23017 port.
-   --  (mcp23017-set-dir addr dir)
+   --  (mcp23017-dir addr dir)
    --    addr is the device address
    --    dir is the direction (0-read, 1-write) bit encoded into a 16 bit
    --      unsigned integer
@@ -119,7 +119,6 @@ package body BBS.lisp.embed.mcp23017 is
    --    dir is the pullup setting (0-disable, 1-enable) bit encoded into a 16 bit
    --      unsigned integer
    --
---   function mcp23017_pullup(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
    procedure mcp23017_pullup(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index) is
       rest : BBS.lisp.cons_index := s;
       param : BBS.lisp.element_type;
@@ -205,11 +204,10 @@ package body BBS.lisp.embed.mcp23017 is
    end;
    --
    --  Set output data of bits in the MCP23017 port.
-   --  (mcp23017-write addr data)
+   --  (mcp23017-set addr data)
    --    addr is the device address
    --    data is the output value as a 16 bit unsigned integer
    --
---   function mcp23017_data(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
    procedure mcp23017_data(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index) is
       rest : BBS.lisp.cons_index := s;
       param : BBS.lisp.element_type;

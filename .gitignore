@@ -8,3 +8,10 @@ obj/*
 # GNAT stuff
 gnatinspect.db
 ada_lisp_embedded_due-loc.xml
+
+# LaTex auxiliary files
+doc/*.aux
+doc/*.log
+doc/*.synctex.gz
+doc/*.toc
+

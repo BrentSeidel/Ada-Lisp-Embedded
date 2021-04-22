@@ -1,0 +1,314 @@
+\documentclass[10pt, openany]{book}
+
+\usepackage{fancyhdr}
+\usepackage{imakeidx}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\usepackage{geometry}
+\geometry{letterpaper}
+
+\usepackage{fancyvrb}
+\usepackage{fancybox}
+
+\usepackage{url}
+\usepackage{gensymb}
+%
+% Rules to allow import of graphics files in EPS format
+%
+\usepackage{graphicx}
+\DeclareGraphicsExtensions{.eps}
+\DeclareGraphicsRule{.eps}{eps}{.eps}{}
+%
+%  Include the listings package
+%
+\usepackage{listings}
+%
+%  Define Tiny Lisp based on Common Lisp
+%
+\lstdefinelanguage[Tiny]{Lisp}[]{Lisp}{morekeywords=[13]{atomp, bit-vector-p, car, cdr, char-downcase, char-code, char-upcase, compiled-function-p, dowhile, dump, exit, fresh-line, if, code-char, lambda, msg, nullp, parse-integer, peek8, peek16, peek32, poke8, poke16, poke32, quote, read-line, reset, setq, simple-bit-vector-p, simple-string-p, simple-vector-p, string-downcase, string-upcase}}
+%
+% Macro definitions
+%
+\newcommand{\operation}[1]{\textbf{\texttt{#1}}}
+\newcommand{\package}[1]{\texttt{#1}}
+\newcommand{\function}[1]{\texttt{#1}}
+\newcommand{\constant}[1]{\emph{\texttt{#1}}}
+\newcommand{\keyword}[1]{\texttt{#1}}
+\newcommand{\datatype}[1]{\texttt{#1}}
+\newcommand{\tl}{Tiny-Lisp}
+\newcommand{\cl}{Common Lisp}
+%
+% Front Matter
+%
+\title{Tiny Lisp Interpreter\\Embedded Computing Annex}
+\author{Brent Seidel \\ Phoenix, AZ}
+\date{ \today }
+%========================================================
+%%% BEGIN DOCUMENT
+\begin{document}
+%
+% Produce the front matter
+%
+\frontmatter
+\maketitle
+\begin{center}
+This document is \copyright 2021 Brent Seidel.  All rights reserved.
+
+\paragraph{}Note that this is a draft version and not the final version for publication.
+\end{center}
+\tableofcontents
+
+\mainmatter
+%----------------------------------------------------------
+\chapter{Introduction}
+This document describes the extensions to the \tl{} language for embedded applications.  For documentation on the core language, see \url{https://github.com/BrentSeidel/Ada-Lisp/tree/master/documentation}.  Due to the diversity of embedded platforms, operations that work on one may not work on another.  Each of the following chapters describes a specific platform, with a few operations that are common to all, or most all platforms.
+
+None of these items are expected to be found in \cl, so any program using them will not be compatible.
+
+%----------------------------------------------------------
+\chapter{Common}
+\lstset{language=[Tiny]Lisp}
+This chapter contains any operations that are common to more than one platform.  Currently, this section is empty.
+\section{Template}
+\subsection{Inputs}
+\subsection{Output}
+\subsection{Example}
+\begin{lstlisting}
+()
+\end{lstlisting}
+
+%----------------------------------------------------------
+\chapter{Arduino Due}
+This chapter contains operations for the Arduino Due.  To use these, include the \package{ada\_lisp\_embedded\_due.gpr} project in your project.
+
+\section{analog-read}
+Reads and returns a value from an analog input pin.
+\subsection{Inputs}
+One integer representing the analog input number.
+\subsection{Output}
+The value of the specified analog input.
+\subsection{Example}
+\begin{lstlisting}
+(analog-read 2)
+\end{lstlisting}
+returns the value of analog input  number 2.
+
+\section{bme280-read}
+Reads the sensors and returns a list of three items containing the temperature (\degree{}C), pressure (Pa), and humidity (\%), in that order.
+\subsection{Inputs}
+None.
+\subsection{Output}
+A list of three integers containing the temperature (\degree{}C), pressure (Pa), and humidity (\%), in that order
+\subsection{Example}
+\begin{lstlisting}
+(bme280-read)
+\end{lstlisting}
+
+\section{bme280-read-raw}
+Reads the sensors and returns a list of three items containing the raw  values for temperature, pressure, and humidity, in that order.
+\subsection{Inputs}
+None.
+\subsection{Output}
+A list of three integers containing the raw values for temperature, pressure, and humidity, in that order.
+\subsection{Example}
+\begin{lstlisting}
+(bme280-read-raw)
+\end{lstlisting}
+
+\section{bmp180-read}
+Reads the sensors and returns a list of two items containing the temperature in (\degree{}C) and atmospheric pressure (Pa) from the BMP180 sensor.
+\subsection{Inputs}
+None.
+\subsection{Output}
+A list of two integers containing the temperature in (\degree{}C) and atmospheric pressure (Pa), in that order.
+\subsection{Example}
+\begin{lstlisting}
+(bmp180-read)
+\end{lstlisting}
+
+\section{l3gd20-read}
+Reads the gyroscopic sensor on a L3GD20 device and returns the values.
+\subsection{Inputs}
+None.
+\subsection{Output}
+A list of three integers containing the rotations around the x, y, and z axises in values of degrees per second (\degree/S).
+\subsection{Example}
+\begin{lstlisting}
+(l3gd20-read)
+\end{lstlisting}
+
+\section{MCP23017 General Information}
+Note that for the MCP23017 devices, currently only addresses 0, 2, and 6 are valid.  At some point, this will be extended to allow the full range of 0-7.
+
+\section{mcp23017-dir}
+Set direction of bits in the MCP23017 port.
+\subsection{Inputs}
+Two integers.  The first is the address of the MCP23017 device, the second is a 16 bit number where each bit represents the direction of that bit in the port (0-read, 1-write).
+\subsection{Output}
+Returns the direction value.
+\subsection{Example}
+\begin{lstlisting}
+(mcp23017-dir 2 #x00FF)
+\end{lstlisting}
+
+\section{mcp23017-polarity}
+Set polarity of bits in the MCP23017 port.
+\subsection{Inputs}
+Two integers.  The first is the address of the MCP23017 device, the second is a 16 bit number where each bit represents the polarity of that bit in the port (0-normal, 1-inverted).
+\subsection{Output}
+Returns the polarity value.
+\subsection{Example}
+\begin{lstlisting}
+(mcp23017-pullup 2 #x00FF)
+\end{lstlisting}
+
+\section{mcp23017-pullup}
+Enable/disable pull-up resistors for bits in the MCP23017 port.
+\subsection{Inputs}
+Two integers.  The first is the address of the MCP23017 device, the second is a 16 bit number where each bit represents the state of the pull-up resistor of that bit in the port (0-disable, 1-enable).
+\subsection{Output}
+Returns the pull-up value.
+\subsection{Example}
+\begin{lstlisting}
+(mcp23017-pullup 2 #x00FF)
+\end{lstlisting}
+
+\section{mcp23017-read}
+Read data from a MCP23017 port
+\subsection{Inputs}
+One integer representing the address (of the MCP23017 device.
+\subsection{Output}
+A 16 bit integer representing the data read from the MCP23017 device.
+\subsection{Example}
+\begin{lstlisting}
+(mcp23017-read 2)
+\end{lstlisting}
+
+\section{mcp23017-set}
+Set output data of bits in the MCP23017 port.
+\subsection{Inputs}
+Two integers.  The first is the address of the MCP23017 device, the second is a 16 bit number where each bit represents the value of that bit in the port (0-low, 1-high).
+\subsection{Output}
+Returns the port data value
+\subsection{Example}
+\begin{lstlisting}
+(mcp23017-set 2 #x00FF)
+\end{lstlisting}
+
+\section{GPIO/Pin General Information}
+The valid GPIO pins are numbered from 0-53.  Due to the way the pins are wired on the Arduino Due, pin number 4 is unusable.
+
+\section{pin-mode}
+Sets a pin's mode to be either input or output.  The first integer is the pin number and the second integer is the mode to set for the pin.  The pin number is range checked as above.  Mode 0 sets the pin to input mode while any other value sets the pin to output mode.  Returns NIL.  This should be used before trying to read or set a pin.
+\subsection{Inputs}
+Two integers.  The first is the pin number.  The second is the pin mode (0 for input, 1 for ouptut).
+\subsection{Output}
+NIL
+\subsection{Example}
+\begin{lstlisting}
+(pin-mode 3 1)
+\end{lstlisting}
+Sets pin 3 to output mode.
+
+\section{pin-pullup}
+Enable or disable the pullup resistor of a digital pin.  Two parameters are read.  The first parameter is the pin number.  The  second is the mode (NIL is disable, T is enable).
+\subsection{Inputs}
+Two integers.  The first is the pin number.  The second is a boolean (NIL for disable, T for enable).
+\subsection{Output}
+NIL
+\subsection{Example}
+\begin{lstlisting}
+(pin-pullup 3 1)
+\end{lstlisting}
+
+\section{pin-read}
+Reads the state of a pin.  It is passed one integer parameter representing the pin number and returns the state of the pin as an integer (0 for low, 1 for high).
+\subsection{Inputs}
+One integer representing the pin number.
+\subsection{Output}
+An integer with 0 being a low value on the pin and 1 being a high value.
+\subsection{Example}
+\begin{lstlisting}
+(read-read 3)
+\end{lstlisting}
+Returns the state of pin 3.
+
+\section{pin-set}
+Set the state of a digital pin  Two parameters are read.  The first parameter is the pin number.  The second is the state (0 is low, 1 is high).
+\subsection{Inputs}
+Two integers.  The first is the pin number.  The second is the state (0 for low, 1 for high).
+\subsection{Output}
+NIL.
+\subsection{Example}
+\begin{lstlisting}
+(pin-set 3 1)
+\end{lstlisting}
+Sets pin 3 to a high state.
+
+\section{pca9685-set}
+Sets the PWM value for a specific channel on the PCA9685 PWM controller.
+\subsection{Inputs}
+Two integers.  The first integer is the channel number (0-15).  The second integer is the PWM value to set (0-4095).
+\subsection{Output}
+NIL.
+\subsection{Example}
+\begin{lstlisting}
+(pca9685-set 7 2047)
+\end{lstlisting}
+
+\section{Stepper Control General Information}
+Currently four stepper motor control channels are available (0-3).  Each channel requires the use of four GPIO pins.
+
+\section{stepper-delay}
+Sets the delay between steps for the specified stepper controller.  The default delay is 5mS.
+\subsection{Inputs}
+Two integers.  The first is the stepper controller number.  The second is the number of mS to delay between steps.
+\subsection{Output}
+NIL
+\subsection{Example}
+\begin{lstlisting}
+(stepper-delay 1 10)
+\end{lstlisting}
+
+\section{stepper-init}
+Initializes a stepper channel.  Assigns the for GPIO pins and configures them.  Sets the internal stepper phase to 1 and sets the pins appropriately.
+\subsection{Inputs}
+Five integers.  The first is the stepper channel number.  The remaining four are the four GPIO pins to use to control the stepper.
+\subsection{Output}
+NIL
+\subsection{Example}
+\begin{lstlisting}
+(stepper-init 1 10 11 12 13)
+\end{lstlisting}
+
+\section{stepper-off}
+De-energizes the specific stepper channel.  This may be done to allow the motor to be manually positioned or to reduce power consumption if holding the motor in place is no longer needed.
+\subsection{Inputs}
+One integer representing the stepper channel.
+\subsection{Output}
+NIL
+\subsection{Example}
+\begin{lstlisting}
+(stepper-off 1)
+\end{lstlisting}
+
+\section{stepper-step}
+Moves the specified stepper motor the given number of steps.  Positive and negative step numbers will rotate in opposite directions.  The actual direction will depend on how the motor is wired.
+\subsection{Inputs}
+Two integers.  The first represents the stepper channel.  The second is the number of steps to take as a signed value.
+\subsection{Output}
+NIL
+\subsection{Example}
+\begin{lstlisting}
+(stepper-step 1 -100)
+\end{lstlisting}
+
+
+%----------------------------------------------------------
+\chapter{Raspberry PI}
+No items yet.
+
+\end{document}
+

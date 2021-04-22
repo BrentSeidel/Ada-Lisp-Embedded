@@ -1,7 +1,7 @@
 with BBS.lisp;
 package BBS.lisp.embed.bmp180 is
    --
-   --  (read-bmp180)
+   --  (bmp180-read)
    --    Reads the ambient temperature in degrees C and atmospheric pressure  in
    --    Pascals from the BMP180 sensor.
    --

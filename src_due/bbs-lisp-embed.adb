@@ -6,7 +6,6 @@ with BBS.embed;
 with BBS.embed.ain.due;
 with BBS.embed.Due.GPIO;
 with BBS.embed.due.serial.int;
---with utils;
 with BBS.lisp.embed.bme280;
 with BBS.lisp.embed.bmp180;
 with BBS.lisp.embed.gpio;
@@ -22,25 +21,25 @@ package body BBS.lisp.embed is
    --
    procedure init is
    begin
-      BBS.lisp.add_builtin("set-pin", BBS.lisp.embed.gpio.set_pin'Access);
+      BBS.lisp.add_builtin("analog-read", read_analog'Access);
+      BBS.lisp.add_builtin("bme280-read", BBS.lisp.embed.bme280.read_bme280'Access);
+      BBS.lisp.add_builtin("bme280-read-raw", BBS.lisp.embed.bme280.read_bme280_raw'Access);
+      BBS.lisp.add_builtin("bmp180-read", BBS.lisp.embed.bmp180.read_bmp180'Access);
       BBS.lisp.add_builtin("pin-mode", BBS.lisp.embed.gpio.pin_mode'Access);
       BBS.lisp.add_builtin("pin-pullup", BBS.lisp.embed.gpio.pin_pullup'Access);
-      BBS.lisp.add_builtin("read-pin", BBS.lisp.embed.gpio.read_pin'Access);
-      BBS.lisp.add_builtin("read-analog", read_analog'Access);
-      BBS.lisp.add_builtin("read-bme280", BBS.lisp.embed.bme280.read_bme280'Access);
-      BBS.lisp.add_builtin("read-bme280-raw", BBS.lisp.embed.bme280.read_bme280_raw'Access);
-      BBS.lisp.add_builtin("read-bmp180", BBS.lisp.embed.bmp180.read_bmp180'Access);
-      BBS.lisp.add_builtin("read-l3gd20", BBS.lisp.embed.l3gd20.read_l3gd20'Access);
-      BBS.lisp.add_builtin("set-pca9685", BBS.lisp.embed.pca9685.set_pca9685'Access);
+      BBS.lisp.add_builtin("pin-read", BBS.lisp.embed.gpio.read_pin'Access);
+      BBS.lisp.add_builtin("pin-set", BBS.lisp.embed.gpio.set_pin'Access);
+      BBS.lisp.add_builtin("l3gd20-read", BBS.lisp.embed.l3gd20.read_l3gd20'Access);
       BBS.lisp.add_builtin("mcp23017-dir", BBS.lisp.embed.mcp23017.mcp23017_dir'Access);
-      BBS.lisp.add_builtin("mcp23017-pullup", BBS.lisp.embed.mcp23017.mcp23017_pullup'Access);
       BBS.lisp.add_builtin("mcp23017-polarity", BBS.lisp.embed.mcp23017.mcp23017_polarity'Access);
-      BBS.lisp.add_builtin("mcp23017-data", BBS.lisp.embed.mcp23017.mcp23017_data'Access);
+      BBS.lisp.add_builtin("mcp23017-pullup", BBS.lisp.embed.mcp23017.mcp23017_pullup'Access);
       BBS.lisp.add_builtin("mcp23017-read", BBS.lisp.embed.mcp23017.mcp23017_read'Access);
-      BBS.lisp.add_builtin("stepper-init", BBS.lisp.embed.stepper.stepper_init'Access);
+      BBS.lisp.add_builtin("mcp23017-set", BBS.lisp.embed.mcp23017.mcp23017_data'Access);
+      BBS.lisp.add_builtin("pca9685-set", BBS.lisp.embed.pca9685.set_pca9685'Access);
       BBS.lisp.add_builtin("stepper-delay", BBS.lisp.embed.stepper.stepper_delay'Access);
+      BBS.lisp.add_builtin("stepper-init", BBS.lisp.embed.stepper.stepper_init'Access);
       BBS.lisp.add_builtin("stepper-off", BBS.lisp.embed.stepper.stepper_off'Access);
-      BBS.lisp.add_builtin("step", BBS.lisp.embed.stepper.stepper_step'Access);
+      BBS.lisp.add_builtin("stepper-step", BBS.lisp.embed.stepper.stepper_step'Access);
    end;
    --
    procedure init_discretes is

@@ -1,11 +1,8 @@
---with BBS.embed.due.serial.int;
 with bbs.embed.i2c.due;
 use type bbs.embed.i2c.err_code;
 use type bbs.embed.i2c.due.port_id;
 with BBS.embed.i2c.BMP180;
 with BBS.lisp.memory;
---with cli;
---use type cli.i2c_device_location;
 package body BBS.lisp.embed.bmp180 is
    --
    --  Read the BMP180 sensor

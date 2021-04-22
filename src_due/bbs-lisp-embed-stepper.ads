@@ -26,7 +26,7 @@ package BBS.lisp.embed.stepper is
    --
    procedure stepper_delay(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index);
    --
-   --  (step num amount)
+   --  (stepper-step num amount)
    --    Moves the specified stepper motor the specified number of steps.
    --    Direction is indicated by the sign.  The actual direction depends on
    --    the wiring.

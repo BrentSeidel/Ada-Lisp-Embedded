@@ -10,8 +10,9 @@ use type BBS.lisp.value_type;
 with BBS.lisp.memory;
 package body BBS.lisp.embed.bme280 is
    --
-   --  (read-bme280) returns a list of three items containing the x, y, and z
-   --  rotations in integer values of degrees per second.
+   --  (bme280-read)
+   --    returns a list of three items containing the x, y, and z
+   --    rotations in integer values of degrees per second.
    --
    procedure read_bme280(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index) is
       pragma Unreferenced (s);
@@ -98,7 +99,7 @@ package body BBS.lisp.embed.bme280 is
       e := (kind => BBS.lisp.E_CONS, ps => head);
    end;
    --
-   -- (read-bme280-raw)
+   -- (bme280-read-raw)
    --    Reads the sensors and returns a list of three items containing the raw
    --    values for temperature, pressure, and humidity, in that order.
    --

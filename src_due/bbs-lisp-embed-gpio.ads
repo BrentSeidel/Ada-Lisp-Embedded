@@ -5,7 +5,7 @@ package BBS.lisp.embed.gpio is
    --  parameter is the pin number (0 .. discretes.max_pin).  The second
    --  is the state (0 is low, 1 is high).
    --
-   --  (set-pin integer integer)
+   --  (pin-set integer integer)
    --    The first integer is the pin number and the second integer is the
    --    pin state.  The pin number is range checked to be between 0 and 53
    --    inclusive and not equal to 4.  The pin state is set to low for a
@@ -14,15 +14,12 @@ package BBS.lisp.embed.gpio is
    procedure set_pin(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index);
    --
    --
-   --  Set the state of a digital pin  Two parameters are read.  The first
-   --  parameter is the pin number (0 .. discretes.max_pin).  The second
-   --  is the state (0 is low, 1 is high).
+   --  Reads the state of a digital pin  Two is the pin number
+   --  (0 .. discretes.max_pin).  The return value is the state of the pin.
    --
-   --  (pin-mode integer integer)
-   --    The first integer is the pin number and the second integer is the mode
-   --    to set for the pin.  The pin number is range checked as above.  Mode 0
-   --    sets the pin to input mode while any other value sets the pin to output
-   --    mode.  Returns NIL.
+   --  (pin-read integer)
+   --    The parameter is the pin number.  Returns the state of the pin
+   --    (0-low, 1-high).
    --
    procedure read_pin(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index);
    --
@@ -31,7 +28,7 @@ package BBS.lisp.embed.gpio is
    --  The first parameter is the pin number (0 .. discretes.max_pin).  The
    --  second is the mode (0 is input, 1 is output).
    --
-   --  (mode integer integer)
+   --  (pin-mode integer integer)
    --    The integer is the pin number range checked as above.  The second is
    --    the mode (0 is input, 1 is output).
    --
@@ -42,7 +39,7 @@ package BBS.lisp.embed.gpio is
    --  The first parameter is the pin number (0 .. discretes.max_pin).  The
    --  second is the mode (NIL is disable, T is enable).
    --
-   --  (pullup-pin integer boolean)
+   --  (pin-pullup integer boolean)
    --    The integer is the pin number range checked as above.
    --    The boolean enables or disables the pullup resistor for the specified pin.
    --

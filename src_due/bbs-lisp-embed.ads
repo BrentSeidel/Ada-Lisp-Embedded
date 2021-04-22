@@ -45,15 +45,15 @@ private
    --  Read the value of one of the analog inputs.
    --
    procedure read_analog(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index);
-   --  (read-analog integer)
+   --  (analog-read integer)
    --    The integer is the pin number range checked to the subtype
    --    BBS.embed.ain.due.AIN_Num.  Returns the analog value of the pin.
    --
    --
-   --  Sets the value of one of the analog outputs.
+   --  Sets the value of one of the analog outputs (not yet implemented).
    --
    procedure set_analog(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index);
-   --  (set-analog integer integer)
+   --  (analog-set integer integer)
    --    The first integer is the pin number range checked to 0 or 1.  The second
    --    integer is the value to write to the output, range limited to 0-4095.
    --    Returns NIL.

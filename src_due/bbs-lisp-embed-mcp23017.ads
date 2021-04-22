@@ -26,7 +26,7 @@ package BBS.lisp.embed.mcp23017 is
    procedure mcp23017_polarity(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index);
    --
    --  Set output data of bits in the MCP23017 port.
-   --  (mcp23017-write addr data)
+   --  (mcp23017-set addr data)
    --    addr is the device address
    --    data is the output value as a 16 bit unsigned integer
    --

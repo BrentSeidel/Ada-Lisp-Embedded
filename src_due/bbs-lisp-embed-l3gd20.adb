@@ -8,8 +8,9 @@ use type BBS.lisp.value_type;
 with BBS.lisp.memory;
 package body BBS.lisp.embed.l3gd20 is
    --
-   --  (read-l3gd20) returns a list of three items containing the x, y, and z
-   --  rotations in integer values of degrees per second.
+   --  (l3gd20-read)
+   --    returns a list of three items containing the x, y, and z
+   --    rotations in integer values of degrees per second.
    --
    procedure read_l3gd20(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index) is
       pragma Unreferenced (s);

@@ -1,7 +1,7 @@
 with BBS.lisp;
 package BBS.lisp.embed.l3gd20 is
    --
-   --  (read-l3gd20)
+   --  (l3gd20-read)
    --    Reads the gyroscope and returns a list of three items containing the
    --    x, y, and z rotations in integer values of degrees per second.
    --

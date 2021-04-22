@@ -8,7 +8,7 @@ use type BBS.lisp.value_type;
 with BBS.lisp.evaluate;
 package body BBS.lisp.embed.pca9685 is
    --
-   --  (set-pca9685 integer integer)
+   --  (pca9685-set integer integer)
    --    The first integer is the channel number (0-15).  The second integer is
    --    the PWM value to set (0-4095).  Sets the specified PCA9685 PWM channel
    --    to the specified value.  Returns NIL.
