@@ -81,7 +81,14 @@ This chapter contains any operations that are common to more than one platform. 
 
 %----------------------------------------------------------
 \chapter{Arduino Due}
-This chapter contains operations for the Arduino Due.  To use these, include the \package{ada\_lisp\_embedded\_due.gpr} project in your project.
+This chapter contains operations for the Arduino Due.  To use these, include the \package{ada\_lisp\_embedded\_due.gpr} project in your project.  After calling \package{BBS.lisp.init()}, make the following calls:
+\lstset{language=Ada}
+\begin{lstlisting}
+  BBS.lisp.embed.init;
+  BBS.lisp.embed.init_discretes;
+\end{lstlisting}
+If you are going to use any of the operations relating to I2C devices, the related \package{*\_found} and \package{*\_info} variables need to be set appropriately.
+
 
 \section{analog-read}
 Reads and returns a value from an analog input pin.
@@ -90,6 +97,7 @@ One integer representing the analog input number.
 \subsection{Output}
 The value of the specified analog input.
 \subsection{Example}
+\lstset{language=[Tiny]Lisp}
 \begin{lstlisting}
 (analog-read 2)
 \end{lstlisting}
