@@ -1,5 +1,5 @@
 with "../BBS-BBB-Ada/bbs_embed_raven.gpr";
-with "../Ada-Lisp/bbs_lisp.gpr";
+with "../Ada-Lisp/bbs_lisp_raven.gpr";
 with "../BBS-Ada/bbs_raven.gpr";
 
 project Ada_Lisp_Embedded_Due is
