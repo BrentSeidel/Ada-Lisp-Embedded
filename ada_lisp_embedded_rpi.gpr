@@ -1,0 +1,24 @@
+with "../BBS-BBB-Ada/bbs_embed.gpr";
+with "../Ada-Lisp/bbs_lisp.gpr";
+with "../BBS-Ada/bbs.gpr";
+
+project Ada_Lisp_Embedded_Rpi is
+
+   for Languages use ("Ada");
+   for Source_Dirs use ("src_rpi", "src_common");
+   for Object_Dir use "obj";
+
+   package Builder is
+      for Switches ("ada") use ("-j4", "-s");
+   end Builder;
+
+   package Compiler is
+      for Switches ("ada") use ("-gnato", "-g", "-gnata", "-gnat12");
+   end Compiler;
+
+   package Linker is
+      for Switches ("ada") use ("-g");
+   end Linker;
+
+end Ada_Lisp_Embedded_Rpi;
+
