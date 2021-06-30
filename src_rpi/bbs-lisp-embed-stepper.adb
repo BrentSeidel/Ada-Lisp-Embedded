@@ -108,19 +108,19 @@ package body BBS.lisp.embed.stepper is
       --  Check if pin numbers are within range of the valid pins.  Note that
       --  pin 4 cannot be used.
       --
-      if (pin_a < 0) or (pin_a > gpio_max_pin) or (pin_a = 4) then
+      if ((pin_a < 0) or (pin_a > gpio_max_pin)) or else (gpio_name(pin_a) = null) then
          BBS.lisp.error("stepper-init", "Pin-a is out of range.");
          ok := False;
       end if;
-      if (pin_b < 0) or (pin_b > gpio_max_pin) or (pin_b = 4) then
+      if (pin_b < 0) or (pin_b > gpio_max_pin) then
          BBS.lisp.error("stepper-init", "Pin-b is out of range.");
          ok := False;
       end if;
-      if (pin_c < 0) or (pin_c > gpio_max_pin) or (pin_c = 4) then
+      if (pin_c < 0) or (pin_c > gpio_max_pin) then
          BBS.lisp.error("stepper-init", "Pin-c is out of range.");
          ok := False;
       end if;
-      if (pin_d < 0) or (pin_d > gpio_max_pin) or (pin_d = 4) then
+      if (pin_d < 0) or (pin_d > gpio_max_pin) then
          BBS.lisp.error("stepper-init", "Pin-d is out of range.");
          ok := False;
       end if;
@@ -128,14 +128,14 @@ package body BBS.lisp.embed.stepper is
       --  If everything is OK, then setup the stepper
       --
       if ok then
-         gpio_pin(pin_a).all.config(BBS.embed.GPIO.Due.gpio_output);
-         gpio_pin(pin_b).all.config(BBS.embed.GPIO.Due.gpio_output);
-         gpio_pin(pin_c).all.config(BBS.embed.GPIO.Due.gpio_output);
-         gpio_pin(pin_d).all.config(BBS.embed.GPIO.Due.gpio_output);
-         steppers(stepper).init(gpio_pin(pin_a).all'Access,
-                                gpio_pin(pin_b).all'Access,
-                                gpio_pin(pin_c).all'Access,
-                                gpio_pin(pin_d).all'Access);
+         gpio_pin(pin_a).set_dir(gpio_name(pin_a).all, BBS.embed.GPIO.Linux.output);
+         gpio_pin(pin_b).set_dir(gpio_name(pin_b).all, BBS.embed.GPIO.Linux.output);
+         gpio_pin(pin_c).set_dir(gpio_name(pin_c).all, BBS.embed.GPIO.Linux.output);
+         gpio_pin(pin_d).set_dir(gpio_name(pin_d).all, BBS.embed.GPIO.Linux.output);
+         steppers(stepper).init(gpio_pin(pin_a)'Access,
+                                gpio_pin(pin_b)'Access,
+                                gpio_pin(pin_c)'Access,
+                                gpio_pin(pin_d)'Access);
          e := BBS.lisp.NIL_ELEM;
       else
          e := (kind => BBS.lisp.E_ERROR);

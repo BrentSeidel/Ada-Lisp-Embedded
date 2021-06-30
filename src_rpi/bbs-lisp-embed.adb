@@ -2,7 +2,7 @@ with BBS.lisp;
 use type BBS.lisp.ptr_type;
 use type BBS.lisp.value_type;
 with BBS.lisp.embed.GPIO;
---with BBS.lisp.embed.stepper;
+with BBS.lisp.embed.stepper;
 with BBS.lisp.evaluate;
 with BBS.embed;
 with BBS.embed.GPIO.Linux;
@@ -19,10 +19,10 @@ package body BBS.lisp.embed is
       BBS.lisp.add_builtin("pin-mode", BBS.lisp.embed.gpio.pin_mode'Access);
       BBS.lisp.add_builtin("pin-read", BBS.lisp.embed.gpio.read_pin'Access);
       BBS.lisp.add_builtin("pin-set", BBS.lisp.embed.gpio.set_pin'Access);
---      BBS.lisp.add_builtin("stepper-delay", BBS.lisp.embed.stepper.stepper_delay'Access);
---      BBS.lisp.add_builtin("stepper-init", BBS.lisp.embed.stepper.stepper_init'Access);
---      BBS.lisp.add_builtin("stepper-off", BBS.lisp.embed.stepper.stepper_off'Access);
---      BBS.lisp.add_builtin("stepper-step", BBS.lisp.embed.stepper.stepper_step'Access);
+      BBS.lisp.add_builtin("stepper-delay", BBS.lisp.embed.stepper.stepper_delay'Access);
+      BBS.lisp.add_builtin("stepper-init", BBS.lisp.embed.stepper.stepper_init'Access);
+      BBS.lisp.add_builtin("stepper-off", BBS.lisp.embed.stepper.stepper_off'Access);
+      BBS.lisp.add_builtin("stepper-step", BBS.lisp.embed.stepper.stepper_step'Access);
    end;
    --
    procedure init_discretes is
