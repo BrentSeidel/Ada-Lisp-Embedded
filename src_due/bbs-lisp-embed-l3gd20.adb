@@ -5,6 +5,7 @@ with BBS.embed.i2c.L3GD20H;
 with BBS.lisp;
 use type BBS.lisp.ptr_type;
 use type BBS.lisp.value_type;
+with BBS.lisp.evaluate;
 with BBS.lisp.memory;
 package body BBS.lisp.embed.l3gd20 is
    --
@@ -52,7 +53,7 @@ package body BBS.lisp.embed.l3gd20 is
          e := (kind => BBS.lisp.E_ERROR);
          return;
       end if;
-      BBS.lisp.cons_table(head).cdr := (kind => BBS.lisp.E_CONS, ps => t1);
+      BBS.lisp.cons_table(head).cdr := BBS.lisp.evaluate.makeList(t1);
       BBS.lisp.cons_table(t1).car := (kind => BBS.lisp.E_VALUE,
                                         v => (kind => BBS.lisp.V_INTEGER, i =>
                                                 BBS.lisp.int32(float(rot.y)*10.0)));
@@ -63,11 +64,11 @@ package body BBS.lisp.embed.l3gd20 is
          e := (kind => BBS.lisp.E_ERROR);
          return;
       end if;
-      BBS.lisp.cons_table(t1).cdr := (kind => BBS.lisp.E_CONS, ps => t2);
+      BBS.lisp.cons_table(t1).cdr := BBS.lisp.evaluate.makeList(t2);
       BBS.lisp.cons_table(t2).car := (kind => BBS.lisp.E_VALUE,
                                         v => (kind => BBS.lisp.V_INTEGER, i =>
                                                 BBS.lisp.int32(float(rot.z)*10.0)));
-      e := (kind => BBS.lisp.E_CONS, ps => head);
+      e := BBS.lisp.evaluate.makeList(head);
    end;
    --
 end;

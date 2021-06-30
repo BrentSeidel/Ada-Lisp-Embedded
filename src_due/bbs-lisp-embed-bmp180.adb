@@ -2,6 +2,7 @@ with bbs.embed.i2c.due;
 use type bbs.embed.i2c.err_code;
 use type bbs.embed.i2c.due.port_id;
 with BBS.embed.i2c.BMP180;
+with BBS.lisp.evaluate;
 with BBS.lisp.memory;
 package body BBS.lisp.embed.bmp180 is
    --
@@ -91,7 +92,7 @@ package body BBS.lisp.embed.bmp180 is
       --  The conses have been successfully allocated.  Now build the list.
       --
       BBS.lisp.cons_table(temp_cons).car := BBS.lisp.NIL_ELEM;
-      BBS.lisp.cons_table(temp_cons).cdr := (kind => BBS.lisp.E_CONS, ps => press_cons);
+      BBS.lisp.cons_table(temp_cons).cdr := BBS.lisp.evaluate.makeList(press_cons);
       BBS.lisp.cons_table(press_cons).car := BBS.lisp.NIL_ELEM;
       BBS.lisp.cons_table(press_cons).cdr := BBS.lisp.NIL_ELEM;
       --
@@ -107,7 +108,7 @@ package body BBS.lisp.embed.bmp180 is
                                                  v => (kind => BBS.lisp.V_INTEGER,
                                                        i => BBS.lisp.int32(pressure)));
       end if;
-      e := (kind => BBS.lisp.E_CONS, ps => temp_cons);
+      e := BBS.lisp.evaluate.makeList(temp_cons);
    end;
    --
 end;

@@ -7,6 +7,7 @@ with BBS.embed.i2c.BME280;
 with BBS.lisp;
 use type BBS.lisp.ptr_type;
 use type BBS.lisp.value_type;
+with BBS.lisp.evaluate;
 with BBS.lisp.memory;
 package body BBS.lisp.embed.bme280 is
    --
@@ -81,7 +82,7 @@ package body BBS.lisp.embed.bme280 is
          e := (kind => BBS.lisp.E_ERROR);
          return;
       end if;
-      BBS.lisp.cons_table(head).cdr := (kind => BBS.lisp.E_CONS, ps => t1);
+      BBS.lisp.cons_table(head).cdr := BBS.lisp.evaluate.makeList(t1);
       BBS.lisp.cons_table(t1).car := (kind => BBS.lisp.E_VALUE,
                                         v => (kind => BBS.lisp.V_INTEGER, i =>
                                                 BBS.lisp.int32(float(press))));
@@ -92,11 +93,11 @@ package body BBS.lisp.embed.bme280 is
          e := (kind => BBS.lisp.E_ERROR);
          return;
       end if;
-      BBS.lisp.cons_table(t1).cdr := (kind => BBS.lisp.E_CONS, ps => t2);
+      BBS.lisp.cons_table(t1).cdr := BBS.lisp.evaluate.makeList(t2);
       BBS.lisp.cons_table(t2).car := (kind => BBS.lisp.E_VALUE,
                                         v => (kind => BBS.lisp.V_INTEGER, i =>
                                                 BBS.lisp.int32(hum)));
-      e := (kind => BBS.lisp.E_CONS, ps => head);
+      e := BBS.lisp.evaluate.makeList(head);
    end;
    --
    -- (bme280-read-raw)
@@ -168,7 +169,7 @@ package body BBS.lisp.embed.bme280 is
          e := (kind => BBS.lisp.E_ERROR);
          return;
       end if;
-      BBS.lisp.cons_table(head).cdr := (kind => BBS.lisp.E_CONS, ps => t1);
+      BBS.lisp.cons_table(head).cdr := BBS.lisp.evaluate.makeList(t1);
       BBS.lisp.cons_table(t1).car := (kind => BBS.lisp.E_VALUE,
                                         v => (kind => BBS.lisp.V_INTEGER, i =>
                                                 BBS.lisp.int32(raw_press)));
@@ -179,11 +180,11 @@ package body BBS.lisp.embed.bme280 is
          e := (kind => BBS.lisp.E_ERROR);
          return;
       end if;
-      BBS.lisp.cons_table(t1).cdr := (kind => BBS.lisp.E_CONS, ps => t2);
+      BBS.lisp.cons_table(t1).cdr := BBS.lisp.evaluate.makeList(t2);
       BBS.lisp.cons_table(t2).car := (kind => BBS.lisp.E_VALUE,
                                         v => (kind => BBS.lisp.V_INTEGER, i =>
                                                 BBS.lisp.int32(raw_hum)));
-      e := (kind => BBS.lisp.E_CONS, ps => head);
+      e := BBS.lisp.evaluate.makeList(head);
    end;
    --
 end;
