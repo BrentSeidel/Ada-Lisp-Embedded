@@ -39,6 +39,7 @@ package body BBS.lisp.embed is
       gpio_name(20) := BBS.embed.RPI.GPIO_20'Access;
       gpio_name(21) := BBS.embed.RPI.GPIO_21'Access;
       gpio_name(22) := BBS.embed.RPI.GPIO_22'Access;
+      gpio_name(23) := BBS.embed.RPI.GPIO_23'Access;
       gpio_name(24) := BBS.embed.RPI.GPIO_24'Access;
       gpio_name(25) := BBS.embed.RPI.GPIO_25'Access;
       gpio_name(26) := BBS.embed.RPI.GPIO_26'Access;
