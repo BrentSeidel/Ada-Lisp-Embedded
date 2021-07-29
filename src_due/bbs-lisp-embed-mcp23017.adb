@@ -1,5 +1,4 @@
 with BBS.lisp;
-use type BBS.lisp.ptr_type;
 use type BBS.lisp.value_type;
 use type BBS.lisp.int32;
 with BBS.lisp.evaluate;
@@ -18,27 +17,22 @@ package body BBS.lisp.embed.mcp23017 is
       addr : BBS.lisp.int32;
    begin
       device := MCP23017_0_info;
-      if p.kind = BBS.lisp.E_VALUE then
-         if p.v.kind = BBS.lisp.V_INTEGER then
-            addr := p.v.i;
-            if (addr = 0) and (mcp23017_0_found /= absent) then
-               device := MCP23017_0_info;
-               return True;
-            elsif (addr = 2) and (mcp23017_2_found /= absent) then
-               device := MCP23017_2_info;
-               return True;
-            elsif (addr = 6) and (mcp23017_6_found /= absent) then
-               device := MCP23017_6_info;
-               return True;
-            else
-               BBS.lisp.error("process_address", "Address must be 0, 2, or 6.");
-            end if;
+      if p.kind = BBS.lisp.V_INTEGER then
+         addr := p.i;
+         if (addr = 0) and (mcp23017_0_found /= absent) then
+            device := MCP23017_0_info;
+            return True;
+         elsif (addr = 2) and (mcp23017_2_found /= absent) then
+            device := MCP23017_2_info;
+            return True;
+         elsif (addr = 6) and (mcp23017_6_found /= absent) then
+            device := MCP23017_6_info;
+            return True;
          else
-            BBS.lisp.error("process_address", "Address must be integer.");
+            BBS.lisp.error("process_address", "Address must be 0, 2, or 6.");
          end if;
       else
-         BBS.lisp.error("process_address", "Address must be an element.");
-         BBS.lisp.print(p, False, True);
+         BBS.lisp.error("process_address", "Address must be integer.");
       end if;
       return False;
    end;
@@ -49,20 +43,15 @@ package body BBS.lisp.embed.mcp23017 is
                          return Boolean is
    begin
       data := 0;
-      if p.kind = BBS.lisp.E_VALUE then
-         if p.v.kind = BBS.lisp.V_INTEGER then
-            if p.v.i >= 0 and p.v.i <= 16#FFFF# then
-               data := BBS.embed.uint16(p.v.i);
-               return True;
-            else
-               BBS.lisp.error("process_data", "Data must be in range 0-#xFFFF.");
-            end if;
+      if p.kind = BBS.lisp.V_INTEGER then
+         if p.i >= 0 and p.i <= 16#FFFF# then
+            data := BBS.embed.uint16(p.i);
+            return True;
          else
-            BBS.lisp.error("process_data", "Data must be integer.");
+            BBS.lisp.error("process_data", "Data must be in range 0-#xFFFF.");
          end if;
       else
-         BBS.lisp.error("process_data", "Data must be an element.");
-         BBS.lisp.print(p, False, True);
+         BBS.lisp.error("process_data", "Data must be integer.");
       end if;
       return False;
    end;
@@ -87,7 +76,7 @@ package body BBS.lisp.embed.mcp23017 is
       param := BBS.lisp.evaluate.first_value(rest);
       if not process_address(param, MCP23017) then
          BBS.lisp.error("mcp23017-dir", "Error occured processing address parameter");
-         e := (kind => BBS.lisp.E_ERROR);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
          return;
       end if;
       --
@@ -96,7 +85,7 @@ package body BBS.lisp.embed.mcp23017 is
       param := BBS.lisp.evaluate.first_value(rest);
       if not process_data(param, data) then
          BBS.lisp.error("mcp23017-dir", "Error processing data parameter");
-         e := (kind => BBS.lisp.E_ERROR);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
          return;
       end if;
       --
@@ -104,13 +93,12 @@ package body BBS.lisp.embed.mcp23017 is
       --
       MCP23017.set_dir(data, err);
       if err = BBS.embed.i2c.none then
-         e := (kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER,
-                                               i => BBS.lisp.int32(data)));
+         e := (kind => BBS.lisp.V_INTEGER, i => BBS.lisp.int32(data));
          return;
       end if;
       BBS.lisp.error("mcp23017-dir", "Error setting direction: " &
                        BBS.embed.i2c.err_code'Image(err));
-      e := (kind => BBS.lisp.E_ERROR);
+      e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
    end;
    --
    --  Enable/disable pull-up resistors for bits in the MCP23017 port.
@@ -132,7 +120,7 @@ package body BBS.lisp.embed.mcp23017 is
       param := BBS.lisp.evaluate.first_value(rest);
       if not process_address(param, MCP23017) then
          BBS.lisp.error("mcp23017-pullup", "Error occured processing address parameter");
-         e := (kind => BBS.lisp.E_ERROR);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
          return;
       end if;
       --
@@ -141,7 +129,7 @@ package body BBS.lisp.embed.mcp23017 is
       param := BBS.lisp.evaluate.first_value(rest);
       if not process_data(param, data) then
          BBS.lisp.error("mcp23017-pullup", "Error processing data parameter");
-         e := (kind => BBS.lisp.E_ERROR);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
          return;
       end if;
       --
@@ -149,13 +137,12 @@ package body BBS.lisp.embed.mcp23017 is
       --
       MCP23017.set_pullup(data, err);
       if err = BBS.embed.i2c.none then
-         e := (kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER,
-                                               i => BBS.lisp.int32(data)));
+         e := (kind => BBS.lisp.V_INTEGER, i => BBS.lisp.int32(data));
          return;
       end if;
       BBS.lisp.error("mcp23017-pullup", "Error setting pullup: " &
                        BBS.embed.i2c.err_code'Image(err));
-      e := (kind => BBS.lisp.E_ERROR);
+      e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
    end;
    --
    --  Set polarity of bits in the MCP23017 port.
@@ -177,7 +164,7 @@ package body BBS.lisp.embed.mcp23017 is
       param := BBS.lisp.evaluate.first_value(rest);
       if not process_address(param, MCP23017) then
          BBS.lisp.error("mcp23017-polarity", "Error occured processing address parameter");
-         e := (kind => BBS.lisp.E_ERROR);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
          return;
       end if;
       --
@@ -186,7 +173,7 @@ package body BBS.lisp.embed.mcp23017 is
       param := BBS.lisp.evaluate.first_value(rest);
       if not process_data(param, data) then
          BBS.lisp.error("mcp23017-polarity", "Error processing data parameter");
-         e := (kind => BBS.lisp.E_ERROR);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
          return;
       end if;
       --
@@ -194,13 +181,12 @@ package body BBS.lisp.embed.mcp23017 is
       --
       MCP23017.set_polarity(data, err);
       if err = BBS.embed.i2c.none then
-         e := (kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER,
-                                               i => BBS.lisp.int32(data)));
+         e := (kind => BBS.lisp.V_INTEGER, i => BBS.lisp.int32(data));
          return;
       end if;
       BBS.lisp.error("mcp23017-polarity", "Error setting polarity: " &
                        BBS.embed.i2c.err_code'Image(err));
-      e := (kind => BBS.lisp.E_ERROR);
+      e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
    end;
    --
    --  Set output data of bits in the MCP23017 port.
@@ -221,7 +207,7 @@ package body BBS.lisp.embed.mcp23017 is
       param := BBS.lisp.evaluate.first_value(rest);
       if not process_address(param, MCP23017) then
          BBS.lisp.error("mcp23017-data", "Error occured processing address parameter");
-         e := (kind => BBS.lisp.E_ERROR);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
          return;
       end if;
       --
@@ -230,7 +216,7 @@ package body BBS.lisp.embed.mcp23017 is
       param := BBS.lisp.evaluate.first_value(rest);
       if not process_data(param, data) then
          BBS.lisp.error("mcp23017-data", "Error processing data parameter");
-         e := (kind => BBS.lisp.E_ERROR);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
          return;
       end if;
       --
@@ -238,13 +224,12 @@ package body BBS.lisp.embed.mcp23017 is
       --
       MCP23017.set_data(data, err);
       if err = BBS.embed.i2c.none then
-         e := (kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER,
-                                               i => BBS.lisp.int32(data)));
+         e := (kind => BBS.lisp.V_INTEGER, i => BBS.lisp.int32(data));
          return;
       end if;
       BBS.lisp.error("mcp23017-data", "Error setting data: " &
                        BBS.embed.i2c.err_code'Image(err));
-      e := (kind => BBS.lisp.E_ERROR);
+      e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
    end;
    --
    --  Read data from a MCP23017 port
@@ -265,17 +250,16 @@ package body BBS.lisp.embed.mcp23017 is
       param := BBS.lisp.evaluate.first_value(rest);
       if not process_address(param, MCP23017) then
          BBS.lisp.error("mcp23017-data", "Error occured processing address parameter");
-         e := (kind => BBS.lisp.E_ERROR);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
          return;
       end if;
       data := mcp23017.get_data(err);
       if err = BBS.embed.i2c.none then
-         e := (kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER,
-                                               i => BBS.lisp.int32(data)));
+         e := (kind => BBS.lisp.V_INTEGER, i => BBS.lisp.int32(data));
          return;
       end if;
       BBS.lisp.error("mcp23017-read", "Error getting data: " &
                        BBS.embed.i2c.err_code'Image(err));
-      e := (kind => BBS.lisp.E_ERROR);
+      e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
    end;
 end;

@@ -1,5 +1,5 @@
 with BBS.lisp;
-use type BBS.lisp.ptr_type;
+--use type BBS.lisp.ptr_type;
 use type BBS.lisp.value_type;
 with BBS.lisp.evaluate;
 with BBS.embed;
@@ -124,9 +124,8 @@ package body BBS.lisp.embed is
       --
       --  Check if the first value is an integer element.
       --
-      if param.kind = BBS.lisp.E_VALUE then
-         if param.v.kind = BBS.lisp.V_INTEGER then
-            pin := Integer(param.v.i);
+         if param.kind = BBS.lisp.V_INTEGER then
+            pin := Integer(param.i);
       --
       --  Check if the pin number is within range of the valid pins.  Note that
       --  pin 4 cannot be used.
@@ -139,11 +138,6 @@ package body BBS.lisp.embed is
             ok := False;
             BBS.lisp.error("read-analog", "Parameter must be integer.");
          end if;
-      else
-         ok := False;
-         BBS.lisp.error("read-analog", "Parameter must be an element.");
-         BBS.lisp.print(param, False, True);
-      end if;
       --
       --  If the parameter is an integer and in range, then read the pin and try
       --  to return the value.
@@ -151,9 +145,9 @@ package body BBS.lisp.embed is
       if ok then
          ain.channel := pin;
          value := ain.get;
-         e := (Kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER, i => BBS.lisp.int32(value)));
+         e := (kind => BBS.lisp.V_INTEGER, i => BBS.lisp.int32(value));
       else
-         e := (kind => BBS.lisp.E_ERROR);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
       end if;
    end;
    --

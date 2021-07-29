@@ -24,7 +24,7 @@ package body BBS.lisp.embed.bmp180 is
       --
       if bmp180_found = absent then
          BBS.lisp.error("read_bmp180", "BMP180 not configured in system");
-         e := (kind => BBS.lisp.E_ERROR);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
          return;
       end if;
       --
@@ -38,7 +38,7 @@ package body BBS.lisp.embed.bmp180 is
       end loop;
       if err /= BBS.embed.i2c.none then
          BBS.lisp.error("read-bmp180", "BMP180 Error: " & BBS.embed.i2c.err_code'Image(err));
-         e := (kind => BBS.lisp.E_ERROR);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
          return;
       else
          temperature := BMP180_info.get_temp(err)/10;
@@ -53,7 +53,7 @@ package body BBS.lisp.embed.bmp180 is
          end loop;
          if err /= BBS.embed.i2c.none then
             BBS.lisp.error("read-bmp180", "BMP180 Error: " & BBS.embed.i2c.err_code'Image(err));
-            e := (kind => BBS.lisp.E_ERROR);
+            e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
             return;
          else
             pressure := BMP180_info.get_press(err);
@@ -78,14 +78,14 @@ package body BBS.lisp.embed.bmp180 is
       flag := BBS.lisp.memory.alloc(temp_cons);
       if not flag then
          BBS.lisp.error("read-bmp180", "Unable to allocate cons for temperature");
-         e := (kind => BBS.lisp.E_ERROR);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
          return;
       end if;
       flag := BBS.lisp.memory.alloc(press_cons);
       if not flag then
          BBS.lisp.error("read-bmp180", "Unable to allocate cons for pressure");
          BBS.lisp.memory.deref(temp_cons);
-         e := (kind => BBS.lisp.E_ERROR);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
          return;
       end if;
       --
@@ -99,14 +99,12 @@ package body BBS.lisp.embed.bmp180 is
       --  Now, add the values to the list if they are present
       --
       if temp_flag then
-         BBS.lisp.cons_table(temp_cons).car := (kind => BBS.lisp.E_VALUE,
-                                                v => (kind => BBS.lisp.V_INTEGER,
-                                                      i => BBS.lisp.int32(temperature*10)));
+         BBS.lisp.cons_table(temp_cons).car := (kind => BBS.lisp.V_INTEGER,
+                                                i => BBS.lisp.int32(temperature*10));
       end if;
       if press_flag then
-         BBS.lisp.cons_table(press_cons).car := (kind => BBS.lisp.E_VALUE,
-                                                 v => (kind => BBS.lisp.V_INTEGER,
-                                                       i => BBS.lisp.int32(pressure)));
+         BBS.lisp.cons_table(press_cons).car := (kind => BBS.lisp.V_INTEGER,
+                                                 i => BBS.lisp.int32(pressure));
       end if;
       e := BBS.lisp.evaluate.makeList(temp_cons);
    end;

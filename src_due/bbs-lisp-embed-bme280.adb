@@ -5,7 +5,6 @@ use type bbs.embed.i2c.err_code;
 use type bbs.embed.i2c.due.port_id;
 with BBS.embed.i2c.BME280;
 with BBS.lisp;
-use type BBS.lisp.ptr_type;
 use type BBS.lisp.value_type;
 with BBS.lisp.evaluate;
 with BBS.lisp.memory;
@@ -32,7 +31,7 @@ package body BBS.lisp.embed.bme280 is
       --
       if bme280_found = absent then
          BBS.lisp.error("read_bme280", "BME280 not configured in system");
-         e := (kind => BBS.lisp.E_ERROR);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
          return;
       end if;
       --
@@ -41,7 +40,7 @@ package body BBS.lisp.embed.bme280 is
       BME280_info.start_conversion(err);
       if err /= BBS.embed.i2c.none then
          BBS.lisp.error("read-bme280", "Error starting conversion: " & BBS.embed.i2c.err_code'Image(err));
-         e := (kind => BBS.lisp.E_ERROR);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
          return;
       end if;
       loop
@@ -51,13 +50,13 @@ package body BBS.lisp.embed.bme280 is
       end loop;
       if err /= BBS.embed.i2c.none then
          BBS.lisp.error("read-bme280", "Error waiting for conversion: " & BBS.embed.i2c.err_code'Image(err));
-         e := (kind => BBS.lisp.E_ERROR);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
          return;
       end if;
       BME280_info.read_data(err);
       if err /= BBS.embed.i2c.none then
          BBS.lisp.error("read-bme280", "Error reading data: " & BBS.embed.i2c.err_code'Image(err));
-         e := (kind => BBS.lisp.E_ERROR);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
          return;
       end if;
       temp := BME280_info.get_temp;
@@ -69,34 +68,31 @@ package body BBS.lisp.embed.bme280 is
       flag := BBS.lisp.memory.alloc(head);
       if not flag then
          BBS.lisp.error("read_bme280", "Unable to allocate cons for results");
-         e := (kind => BBS.lisp.E_ERROR);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
          return;
       end if;
-      BBS.lisp.cons_table(head).car := (kind => BBS.lisp.E_VALUE,
-                                        v => (kind => BBS.lisp.V_INTEGER, i =>
-                                                BBS.lisp.int32(float(temp)*10.0)));
+      BBS.lisp.cons_table(head).car := (kind => BBS.lisp.V_INTEGER, i =>
+                                                BBS.lisp.int32(float(temp)*10.0));
       flag := BBS.lisp.memory.alloc(t1);
       if not flag then
          BBS.lisp.memory.deref(head);
          BBS.lisp.error("read_bme280", "Unable to allocate cons for results");
-         e := (kind => BBS.lisp.E_ERROR);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
          return;
       end if;
       BBS.lisp.cons_table(head).cdr := BBS.lisp.evaluate.makeList(t1);
-      BBS.lisp.cons_table(t1).car := (kind => BBS.lisp.E_VALUE,
-                                        v => (kind => BBS.lisp.V_INTEGER, i =>
-                                                BBS.lisp.int32(float(press))));
+      BBS.lisp.cons_table(t1).car := (kind => BBS.lisp.V_INTEGER, i =>
+                                                BBS.lisp.int32(float(press)));
       flag := BBS.lisp.memory.alloc(t2);
       if not flag then
          BBS.lisp.memory.deref(head);
          BBS.lisp.error("read_bme280", "Unable to allocate cons for results");
-         e := (kind => BBS.lisp.E_ERROR);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
          return;
       end if;
       BBS.lisp.cons_table(t1).cdr := BBS.lisp.evaluate.makeList(t2);
-      BBS.lisp.cons_table(t2).car := (kind => BBS.lisp.E_VALUE,
-                                        v => (kind => BBS.lisp.V_INTEGER, i =>
-                                                BBS.lisp.int32(hum)));
+      BBS.lisp.cons_table(t2).car := (kind => BBS.lisp.V_INTEGER, i =>
+                                                BBS.lisp.int32(hum));
       e := BBS.lisp.evaluate.makeList(head);
    end;
    --
@@ -121,7 +117,7 @@ package body BBS.lisp.embed.bme280 is
       --
       if bme280_found = absent then
          BBS.lisp.error("read_bme280-raw", "BME280 not configured in system");
-         e := (kind => BBS.lisp.E_ERROR);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
          return;
       end if;
       --
@@ -130,7 +126,7 @@ package body BBS.lisp.embed.bme280 is
       BME280_info.start_conversion(err);
       if err /= BBS.embed.i2c.none then
          BBS.lisp.error("read-bme280-raw", "Error starting conversion: " & BBS.embed.i2c.err_code'Image(err));
-         e := (kind => BBS.lisp.E_ERROR);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
          return;
       end if;
       loop
@@ -140,13 +136,13 @@ package body BBS.lisp.embed.bme280 is
       end loop;
       if err /= BBS.embed.i2c.none then
          BBS.lisp.error("read-bme280-raw", "Error waiting for conversion: " & BBS.embed.i2c.err_code'Image(err));
-         e := (kind => BBS.lisp.E_ERROR);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
          return;
       end if;
       BME280_info.read_data(err);
       if err /= BBS.embed.i2c.none then
          BBS.lisp.error("read-bme280-raw", "Error reading data: " & BBS.embed.i2c.err_code'Image(err));
-         e := (kind => BBS.lisp.E_ERROR);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
          return;
       end if;
       BME280_info.get_raw(raw_temp, raw_press, raw_hum);
@@ -156,34 +152,31 @@ package body BBS.lisp.embed.bme280 is
       flag := BBS.lisp.memory.alloc(head);
       if not flag then
          BBS.lisp.error("read_bme280-raw", "Unable to allocate cons for results");
-         e := (kind => BBS.lisp.E_ERROR);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
          return;
       end if;
-      BBS.lisp.cons_table(head).car := (kind => BBS.lisp.E_VALUE,
-                                        v => (kind => BBS.lisp.V_INTEGER, i =>
-                                                BBS.lisp.int32(raw_temp)));
+      BBS.lisp.cons_table(head).car := (kind => BBS.lisp.V_INTEGER, i =>
+                                                BBS.lisp.int32(raw_temp));
       flag := BBS.lisp.memory.alloc(t1);
       if not flag then
          BBS.lisp.memory.deref(head);
          BBS.lisp.error("read_bme280-raw", "Unable to allocate cons for results");
-         e := (kind => BBS.lisp.E_ERROR);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
          return;
       end if;
       BBS.lisp.cons_table(head).cdr := BBS.lisp.evaluate.makeList(t1);
-      BBS.lisp.cons_table(t1).car := (kind => BBS.lisp.E_VALUE,
-                                        v => (kind => BBS.lisp.V_INTEGER, i =>
-                                                BBS.lisp.int32(raw_press)));
+      BBS.lisp.cons_table(t1).car := (kind => BBS.lisp.V_INTEGER, i =>
+                                                BBS.lisp.int32(raw_press));
       flag := BBS.lisp.memory.alloc(t2);
       if not flag then
          BBS.lisp.memory.deref(head);
          BBS.lisp.error("read_bme280-raw", "Unable to allocate cons for results");
-         e := (kind => BBS.lisp.E_ERROR);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
          return;
       end if;
       BBS.lisp.cons_table(t1).cdr := BBS.lisp.evaluate.makeList(t2);
-      BBS.lisp.cons_table(t2).car := (kind => BBS.lisp.E_VALUE,
-                                        v => (kind => BBS.lisp.V_INTEGER, i =>
-                                                BBS.lisp.int32(raw_hum)));
+      BBS.lisp.cons_table(t2).car := (kind => BBS.lisp.V_INTEGER, i =>
+                                                BBS.lisp.int32(raw_hum));
       e := BBS.lisp.evaluate.makeList(head);
    end;
    --

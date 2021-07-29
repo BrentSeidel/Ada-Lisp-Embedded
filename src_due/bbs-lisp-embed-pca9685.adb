@@ -3,7 +3,6 @@ use type bbs.embed.i2c.err_code;
 use type bbs.embed.i2c.due.port_id;
 with BBS.embed.i2c.PCA9685;
 with BBS.lisp;
-use type BBS.lisp.ptr_type;
 use type BBS.lisp.value_type;
 with BBS.lisp.evaluate;
 package body BBS.lisp.embed.pca9685 is
@@ -27,7 +26,7 @@ package body BBS.lisp.embed.pca9685 is
       --
       if pca9685_found = absent then
          BBS.lisp.error("set-pca9685", "PCA9685 not configured in system");
-         e := (kind => BBS.lisp.E_ERROR);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
          return;
       end if;
       --
@@ -41,31 +40,19 @@ package body BBS.lisp.embed.pca9685 is
       --
       --  Check if the channel number value is an integer atom.
       --
-      if chan_elem.kind = BBS.lisp.E_VALUE then
-         if chan_elem.v.kind = BBS.lisp.V_INTEGER then
-            channel := Integer(chan_elem.v.i);
-         else
-            BBS.lisp.error("set-pca9685", "PCA9685 channel must be integer.");
-            ok := False;
-         end if;
+      if chan_elem.kind = BBS.lisp.V_INTEGER then
+         channel := Integer(chan_elem.i);
       else
-         BBS.lisp.error("set-pca9685", "PCA9685 channel must be an element.");
-         BBS.lisp.print(chan_elem, False, True);
+         BBS.lisp.error("set-pca9685", "PCA9685 channel must be integer.");
          ok := False;
       end if;
       --
       --  Check if the channel value is an integer atom.
       --
-      if value_elem.kind = BBS.lisp.E_VALUE then
-         if value_elem.v.kind = BBS.lisp.V_INTEGER then
-            value := Integer(value_elem.v.i);
-         else
-            BBS.lisp.error("set-pca9685", "PCA9685 channel value must be integer.");
-            ok := False;
-         end if;
+      if value_elem.kind = BBS.lisp.V_INTEGER then
+         value := Integer(value_elem.i);
       else
-         BBS.lisp.error("set-pca9685", "PCA9685 channel value must be an atom.");
-         BBS.lisp.print(value_elem, False, True);
+         BBS.lisp.error("set-pca9685", "PCA9685 channel value must be integer.");
          ok := False;
       end if;
       --
@@ -90,11 +77,11 @@ package body BBS.lisp.embed.pca9685 is
                          BBS.embed.uint12(value), err);
          if err /= BBS.embed.i2c.none then
             BBS.lisp.error("set-pca9685", "PCA9685 Error: " & BBS.embed.i2c.err_code'Image(err));
-            e := (kind => BBS.lisp.E_ERROR);
+            e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
             return;
          end if;
       else
-         e := (kind => BBS.lisp.E_ERROR);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
          return;
       end if;
       e := BBS.lisp.NIL_ELEM;

@@ -2,7 +2,6 @@ with Ada.Real_Time;
 use type Ada.Real_Time.Time;
 with BBS.embed.GPIO.Due;
 with BBS.lisp;
-use type BBS.lisp.ptr_type;
 use type BBS.lisp.value_type;
 with BBS.lisp.evaluate;
 package body BBS.lisp.embed.stepper is
@@ -26,75 +25,50 @@ package body BBS.lisp.embed.stepper is
       --  Check if the stepper number value is an integer element.
       --
       stepper_elem := BBS.lisp.evaluate.first_value(rest);
-      if stepper_elem.kind = BBS.lisp.E_VALUE then
-         if stepper_elem.v.kind = BBS.lisp.V_INTEGER then
-            stepper := Integer(stepper_elem.v.i);
-         else
-            BBS.lisp.error("stepper-init", "Stepper number must be integer.");
-            ok := False;
-         end if;
+      if stepper_elem.kind = BBS.lisp.V_INTEGER then
+         stepper := Integer(stepper_elem.i);
       else
-         BBS.lisp.error("stepper-init", "Stepper number must be an element.");
+         BBS.lisp.error("stepper-init", "Stepper number must be integer.");
          ok := False;
       end if;
       --
       --  Check if pin a is an integer element.
       --
       pin_elem := BBS.lisp.evaluate.first_value(rest);
-      if pin_elem.kind = BBS.lisp.E_VALUE then
-         if pin_elem.v.kind = BBS.lisp.V_INTEGER then
-            pin_a := Integer(pin_elem.v.i);
-         else
-            BBS.lisp.error("stepper-init", "Pin-a number must be integer.");
-            ok := False;
-         end if;
+      if pin_elem.kind = BBS.lisp.V_INTEGER then
+         pin_a := Integer(pin_elem.i);
       else
-         BBS.lisp.error("stepper-init", "Pin-a number must be an element.");
+         BBS.lisp.error("stepper-init", "Pin-a number must be integer.");
          ok := False;
       end if;
       --
       --  Check if pin b is an integer element.
       --
       pin_elem := BBS.lisp.evaluate.first_value(rest);
-      if pin_elem.kind = BBS.lisp.E_VALUE then
-         if pin_elem.v.kind = BBS.lisp.V_INTEGER then
-            pin_b := Integer(pin_elem.v.i);
-         else
-            BBS.lisp.error("stepper-init", "Pin-b number must be integer.");
-            ok := False;
-         end if;
+      if pin_elem.kind = BBS.lisp.V_INTEGER then
+         pin_b := Integer(pin_elem.i);
       else
-         BBS.lisp.error("stepper-init", "Pin-b number must be an element.");
+         BBS.lisp.error("stepper-init", "Pin-b number must be integer.");
          ok := False;
       end if;
       --
       --  Check if pin c is an integer element.
       --
       pin_elem := BBS.lisp.evaluate.first_value(rest);
-      if pin_elem.kind = BBS.lisp.E_VALUE then
-         if pin_elem.v.kind = BBS.lisp.V_INTEGER then
-            pin_c := Integer(pin_elem.v.i);
-         else
-            BBS.lisp.error("stepper-init", "Pin-c number must be integer.");
-            ok := False;
-         end if;
+      if pin_elem.kind = BBS.lisp.V_INTEGER then
+         pin_c := Integer(pin_elem.i);
       else
-         BBS.lisp.error("stepper-init", "Pin-c number must be an element.");
+         BBS.lisp.error("stepper-init", "Pin-c number must be integer.");
          ok := False;
       end if;
       --
       --  Check if pin d is an integer element.
       --
       pin_elem := BBS.lisp.evaluate.first_value(rest);
-      if pin_elem.kind = BBS.lisp.E_VALUE then
-         if pin_elem.v.kind = BBS.lisp.V_INTEGER then
-            pin_d := Integer(pin_elem.v.i);
-         else
-            BBS.lisp.error("stepper-init", "Pin-d number must be integer.");
-            ok := False;
-         end if;
+      if pin_elem.kind = BBS.lisp.V_INTEGER then
+         pin_d := Integer(pin_elem.i);
       else
-         BBS.lisp.error("stepper-init", "Pin-d number must be an element.");
+         BBS.lisp.error("stepper-init", "Pin-d number must be integer.");
          ok := False;
       end if;
       --
@@ -138,7 +112,7 @@ package body BBS.lisp.embed.stepper is
                                 gpio_pin(pin_d).all'Access);
          e := BBS.lisp.NIL_ELEM;
       else
-         e := (kind => BBS.lisp.E_ERROR);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
       end if;
    end;
    --
@@ -158,30 +132,20 @@ package body BBS.lisp.embed.stepper is
       --  Check if the stepper number value is an integer element.
       --
       stepper_elem := BBS.lisp.evaluate.first_value(rest);
-      if stepper_elem.kind = BBS.lisp.E_VALUE then
-         if stepper_elem.v.kind = BBS.lisp.V_INTEGER then
-            stepper := Integer(stepper_elem.v.i);
-         else
-            BBS.lisp.error("stepper-delay", "Stepper number must be integer.");
-            ok := False;
-         end if;
+      if stepper_elem.kind = BBS.lisp.V_INTEGER then
+         stepper := Integer(stepper_elem.i);
       else
-         BBS.lisp.error("stepper-delay", "Stepper number must be an element.");
+         BBS.lisp.error("stepper-delay", "Stepper number must be integer.");
          ok := False;
       end if;
       --
       --  Check if delay time is an integer element.
       --
       delay_elem := BBS.lisp.evaluate.first_value(rest);
-      if delay_elem.kind = BBS.lisp.E_VALUE then
-         if delay_elem.v.kind = BBS.lisp.V_INTEGER then
-            delay_time := Integer(delay_elem.v.i);
-         else
-            BBS.lisp.error("stepper-delay", "Delay time must be integer.");
-            ok := False;
-         end if;
+      if delay_elem.kind = BBS.lisp.V_INTEGER then
+         delay_time := Integer(delay_elem.i);
       else
-         BBS.lisp.error("stepper-delay", "Delay time must be an element.");
+         BBS.lisp.error("stepper-delay", "Delay time must be integer.");
          ok := False;
       end if;
       if delay_time < 0 then
@@ -192,7 +156,7 @@ package body BBS.lisp.embed.stepper is
          steppers(stepper).set_delay(delay_time);
          e := BBS.lisp.NIL_ELEM;
       else
-         e := (kind => BBS.lisp.E_ERROR);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
       end if;
    end;
 
@@ -214,30 +178,20 @@ package body BBS.lisp.embed.stepper is
       --  Check if the stepper number value is an integer element.
       --
       stepper_elem := BBS.lisp.evaluate.first_value(rest);
-      if stepper_elem.kind = BBS.lisp.E_VALUE then
-         if stepper_elem.v.kind = BBS.lisp.V_INTEGER then
-            stepper := Integer(stepper_elem.v.i);
-         else
-            BBS.lisp.error("step", "Stepper number must be integer.");
-            ok := False;
-         end if;
+      if stepper_elem.kind = BBS.lisp.V_INTEGER then
+         stepper := Integer(stepper_elem.i);
       else
-         BBS.lisp.error("step", "Stepper number must be an element.");
+         BBS.lisp.error("step", "Stepper number must be integer.");
          ok := False;
       end if;
       --
       --  Check if step amount is an integer element.
       --
       amount_elem := BBS.lisp.evaluate.first_value(rest);
-      if amount_elem.kind = BBS.lisp.E_VALUE then
-         if amount_elem.v.kind = BBS.lisp.V_INTEGER then
-            amount := Integer(amount_elem.v.i);
-         else
-            BBS.lisp.error("step", "Amount must be integer.");
-            ok := False;
-         end if;
+      if amount_elem.kind = BBS.lisp.V_INTEGER then
+         amount := Integer(amount_elem.i);
       else
-         BBS.lisp.error("step", "Amount must be an element.");
+         BBS.lisp.error("step", "Amount must be integer.");
          ok := False;
       end if;
       --
@@ -252,7 +206,7 @@ package body BBS.lisp.embed.stepper is
          steppers(stepper).step(amount);
          e := BBS.lisp.NIL_ELEM;
       else
-         e := (kind => BBS.lisp.E_ERROR);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
       end if;
    end;
    --
@@ -269,22 +223,17 @@ package body BBS.lisp.embed.stepper is
       --  Check if the stepper number value is an integer element.
       --
       stepper_elem := BBS.lisp.evaluate.first_value(rest);
-      if stepper_elem.kind = BBS.lisp.E_VALUE then
-         if stepper_elem.v.kind = BBS.lisp.V_INTEGER then
-            stepper := Integer(stepper_elem.v.i);
-         else
-            BBS.lisp.error("step", "Stepper number must be integer.");
-            ok := False;
-         end if;
+      if stepper_elem.kind = BBS.lisp.V_INTEGER then
+         stepper := Integer(stepper_elem.i);
       else
-         BBS.lisp.error("step", "Stepper number must be an element.");
+         BBS.lisp.error("step", "Stepper number must be integer.");
          ok := False;
       end if;
       if ok then
          steppers(stepper).stepper_off;
          e := BBS.lisp.NIL_ELEM;
       else
-         e := (kind => BBS.lisp.E_ERROR);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
       end if;
    end;
    --
