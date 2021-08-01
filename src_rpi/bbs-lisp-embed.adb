@@ -1,6 +1,4 @@
 with BBS.lisp;
-use type BBS.lisp.ptr_type;
-use type BBS.lisp.value_type;
 with BBS.lisp.embed.GPIO;
 with BBS.lisp.embed.stepper;
 with BBS.lisp.evaluate;

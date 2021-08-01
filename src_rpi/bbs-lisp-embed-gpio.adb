@@ -2,9 +2,6 @@ with BBS.embed;
 with BBS.embed.GPIO;
 with BBS.embed.GPIO.Linux;
 with BBS.embed.RPI;
-with BBS.lisp;
-use type BBS.lisp.ptr_type;
-use type BBS.lisp.value_type;
 with BBS.lisp.evaluate;
 package body BBS.lisp.embed.gpio is
    --
@@ -13,8 +10,8 @@ package body BBS.lisp.embed.gpio is
    --  is the state (0 is low, 1 is high).
    --
    procedure set_pin(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index) is
-      pin_elem : BBS.lisp.element_type;
-      state_elem  : BBS.lisp.element_type;
+      pin_elem : element_type;
+      state_elem  : element_type;
       pin : Integer;
       state : Integer;
       rest : BBS.lisp.cons_index := s;
@@ -28,29 +25,19 @@ package body BBS.lisp.embed.gpio is
       --
       --  Check if the pin number value is an integer element.
       --
-      if pin_elem.kind = BBS.lisp.E_VALUE then
-         if pin_elem.v.kind = BBS.lisp.V_INTEGER then
-            pin := Integer(pin_elem.v.i);
-         else
-            BBS.lisp.error("set-pin", "Pin number must be integer.");
-            ok := False;
-         end if;
+      if pin_elem.kind = V_INTEGER then
+         pin := Integer(pin_elem.i);
       else
-         BBS.lisp.error("set-pin", "Pin number must be an element.");
+         error("set-pin", "Pin number must be integer.");
          ok := False;
       end if;
       --
       --  Check if the pin state is an integer element.
       --
-      if state_elem.kind = BBS.lisp.E_VALUE then
-         if state_elem.v.kind = BBS.lisp.V_INTEGER then
-            state := Integer(state_elem.v.i);
-         else
-            BBS.lisp.error("set-pin", "Pin state must be integer.");
-            ok := False;
-         end if;
+      if state_elem.kind = V_INTEGER then
+         state := Integer(state_elem.i);
       else
-         BBS.lisp.error("set-pin", "Pin state must be an element.");
+         error("set-pin", "Pin state must be integer.");
          ok := False;
       end if;
       --
@@ -58,7 +45,7 @@ package body BBS.lisp.embed.gpio is
       --  pin 4 cannot be used.
       --
       if (pin < 0) or (pin > gpio_max_pin) or (pin = 4) then
-         BBS.lisp.error("set-pin", "Pin number is out of range.");
+         error("set-pin", "Pin number is out of range.");
          ok := False;
       end if;
       --
@@ -70,11 +57,10 @@ package body BBS.lisp.embed.gpio is
          else
             gpio_pin(pin).set(1);
          end if;
+         e := NIL_ELEM;
       else
-         e := (kind => BBS.lisp.E_ERROR);
-         return;
+         e := make_error(ERR_UNKNOWN);
       end if;
-      e := BBS.lisp.NIL_ELEM;
    end;
    --
    --  Set the state of a digital pin  Two parameters are read.  The first
@@ -82,9 +68,9 @@ package body BBS.lisp.embed.gpio is
    --  is the state (0 is low, 1 is high).
    --
    procedure read_pin(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index) is
-      param : BBS.lisp.element_type;
+      param : element_type;
       pin : Integer;
-      rest : BBS.lisp.cons_index := s;
+      rest : cons_index := s;
       value : BBS.embed.Bit;
       ok : Boolean := True;
    begin
@@ -95,25 +81,19 @@ package body BBS.lisp.embed.gpio is
       --
       --  Check if the first value is an integer element.
       --
-      if param.kind = BBS.lisp.E_VALUE then
-         if param.v.kind = BBS.lisp.V_INTEGER then
-            pin := Integer(param.v.i);
+      if param.kind = V_INTEGER then
+         pin := Integer(param.i);
       --
       --  Check if the pin number is within range of the valid pins.  Not that
       --  pin 4 cannot be used.
       --
-            if (pin < 0) or (pin > gpio_max_pin) or (pin = 4) then
-               BBS.lisp.error("read-pin", "Pin number is out of range.");
-               ok := False;
-            end if;
-         else
+         if (pin < 0) or (pin > gpio_max_pin) or (pin = 4) then
+            error("read-pin", "Pin number is out of range.");
             ok := False;
-            BBS.lisp.error("read-pin", "Parameter must be integer.");
          end if;
       else
          ok := False;
-         BBS.lisp.error("read-pin", "Parameter must be an element.");
-         BBS.lisp.print(param, False, True);
+         error("read-pin", "Parameter must be integer.");
       end if;
       --
       --  If the parameter is an integer and in range, then read the pin and try
@@ -121,9 +101,9 @@ package body BBS.lisp.embed.gpio is
       --
       if ok then
          value := gpio_pin(pin).get;
-         e := (kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER, i => BBS.lisp.int32(value)));
+         e := (kind => BBS.lisp.V_INTEGER, i => BBS.lisp.int32(value));
       else
-         e := (kind => BBS.lisp.E_ERROR);
+         e := make_error(ERR_UNKNOWN);
       end if;
    end;
    --
@@ -132,11 +112,11 @@ package body BBS.lisp.embed.gpio is
    --  second is the mode (0 is input, 1 is output).
    --
    procedure pin_mode(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index) is
-      pin_elem : BBS.lisp.element_type;
-      mode_elem  : BBS.lisp.element_type;
+      pin_elem : element_type;
+      mode_elem  : element_type;
       pin : Integer;
       state : Integer;
-      rest : BBS.lisp.cons_index := s;
+      rest : cons_index := s;
       ok : Boolean := True;
    begin
       --
@@ -150,31 +130,19 @@ package body BBS.lisp.embed.gpio is
       --
       --  Check if the pin number value is an integer element.
       --
-      if pin_elem.kind = BBS.lisp.E_VALUE then
-         if pin_elem.v.kind = BBS.lisp.V_INTEGER then
-            pin := Integer(pin_elem.v.i);
-         else
-            BBS.lisp.error("pin-mode", "Pin number must be integer.");
-            ok := False;
-         end if;
+      if pin_elem.kind = V_INTEGER then
+         pin := Integer(pin_elem.i);
       else
-         BBS.lisp.error("pin-mode", "Pin number must be an element.");
-         BBS.lisp.print(pin_elem, False, True);
+         error("pin-mode", "Pin number must be integer.");
          ok := False;
       end if;
       --
       --  Check if the pin state is an integer element.
       --
-      if mode_elem.kind = BBS.lisp.E_VALUE then
-         if mode_elem.v.kind = BBS.lisp.V_INTEGER then
-            state := Integer(mode_elem.v.i);
-         else
-            BBS.lisp.error("pin-mode", "Pin mode must be integer.");
-            ok := False;
-         end if;
+      if mode_elem.kind = V_INTEGER then
+         state := Integer(mode_elem.i);
       else
-         BBS.lisp.error("pin-mode", "Pin mode must be an element.");
-         BBS.lisp.print(mode_elem, False, True);
+         error("pin-mode", "Pin mode must be integer.");
          ok := False;
       end if;
       --
@@ -182,7 +150,7 @@ package body BBS.lisp.embed.gpio is
       --  pin 4 cannot be used.
       --
       if (pin < 0) or (pin > gpio_max_pin) or (pin = 4) then
-         BBS.lisp.error("pin-mode", "Pin number is out of range.");
+         error("pin-mode", "Pin number is out of range.");
          ok := False;
       end if;
       --
@@ -194,9 +162,9 @@ package body BBS.lisp.embed.gpio is
          else
             gpio_pin(pin).set_dir(gpio_name(pin).all, BBS.embed.GPIO.Linux.output);
          end if;
-         e := BBS.lisp.NIL_ELEM;
+         e := NIL_ELEM;
       else
-         e := (kind => BBS.lisp.E_ERROR);
+         e := make_error(ERR_UNKNOWN);
       end if;
    end;
    --
