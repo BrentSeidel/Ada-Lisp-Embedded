@@ -4,8 +4,7 @@ with BBS.embed.i2c.due;
 use type bbs.embed.i2c.err_code;
 use type bbs.embed.i2c.due.port_id;
 with BBS.embed.i2c.BME280;
-with BBS.lisp;
-use type BBS.lisp.value_type;
+with BBS.lisp.conses;
 with BBS.lisp.evaluate;
 with BBS.lisp.memory;
 package body BBS.lisp.embed.bme280 is
@@ -31,7 +30,7 @@ package body BBS.lisp.embed.bme280 is
       --
       if bme280_found = absent then
          BBS.lisp.error("read_bme280", "BME280 not configured in system");
-         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_HARDWARE);
          return;
       end if;
       --
@@ -40,7 +39,7 @@ package body BBS.lisp.embed.bme280 is
       BME280_info.start_conversion(err);
       if err /= BBS.embed.i2c.none then
          BBS.lisp.error("read-bme280", "Error starting conversion: " & BBS.embed.i2c.err_code'Image(err));
-         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_HARDWARE);
          return;
       end if;
       loop
@@ -50,13 +49,13 @@ package body BBS.lisp.embed.bme280 is
       end loop;
       if err /= BBS.embed.i2c.none then
          BBS.lisp.error("read-bme280", "Error waiting for conversion: " & BBS.embed.i2c.err_code'Image(err));
-         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_HARDWARE);
          return;
       end if;
       BME280_info.read_data(err);
       if err /= BBS.embed.i2c.none then
          BBS.lisp.error("read-bme280", "Error reading data: " & BBS.embed.i2c.err_code'Image(err));
-         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_HARDWARE);
          return;
       end if;
       temp := BME280_info.get_temp;
@@ -65,34 +64,34 @@ package body BBS.lisp.embed.bme280 is
       std.put_line("BME280 Pressure " & Integer'Image(Integer(press)));
       hum := BME280_info.get_hum;
       std.put_line("BME280 Humidity " & Integer'Image(Integer(Float(hum)/102.4)));
-      flag := BBS.lisp.memory.alloc(head);
+      flag := BBS.lisp.conses.alloc(head);
       if not flag then
          BBS.lisp.error("read_bme280", "Unable to allocate cons for results");
-         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_ALLOCCONS);
          return;
       end if;
-      BBS.lisp.cons_table(head).car := (kind => BBS.lisp.V_INTEGER, i =>
-                                                BBS.lisp.int32(float(temp)*10.0));
-      flag := BBS.lisp.memory.alloc(t1);
+      BBS.lisp.conses.set_car(head, (kind => BBS.lisp.V_INTEGER, i =>
+                                       BBS.lisp.int32(float(temp)*10.0)));
+      flag := BBS.lisp.conses.alloc(t1);
       if not flag then
-         BBS.lisp.memory.deref(head);
+         BBS.lisp.conses.deref(head);
          BBS.lisp.error("read_bme280", "Unable to allocate cons for results");
-         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_ALLOCCONS);
          return;
       end if;
-      BBS.lisp.cons_table(head).cdr := BBS.lisp.evaluate.makeList(t1);
-      BBS.lisp.cons_table(t1).car := (kind => BBS.lisp.V_INTEGER, i =>
-                                                BBS.lisp.int32(float(press)));
-      flag := BBS.lisp.memory.alloc(t2);
+      BBS.lisp.conses.set_cdr(head, BBS.lisp.evaluate.makeList(t1));
+      BBS.lisp.conses.set_car(t1, (kind => BBS.lisp.V_INTEGER, i =>
+                                     BBS.lisp.int32(float(press))));
+      flag := BBS.lisp.conses.alloc(t2);
       if not flag then
-         BBS.lisp.memory.deref(head);
+         BBS.lisp.conses.deref(head);
          BBS.lisp.error("read_bme280", "Unable to allocate cons for results");
-         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_ALLOCCONS);
          return;
       end if;
-      BBS.lisp.cons_table(t1).cdr := BBS.lisp.evaluate.makeList(t2);
-      BBS.lisp.cons_table(t2).car := (kind => BBS.lisp.V_INTEGER, i =>
-                                                BBS.lisp.int32(hum));
+      BBS.lisp.conses.set_cdr(t1, BBS.lisp.evaluate.makeList(t2));
+      BBS.lisp.conses.set_car(t2, (kind => BBS.lisp.V_INTEGER, i =>
+                                     BBS.lisp.int32(hum)));
       e := BBS.lisp.evaluate.makeList(head);
    end;
    --
@@ -117,7 +116,7 @@ package body BBS.lisp.embed.bme280 is
       --
       if bme280_found = absent then
          BBS.lisp.error("read_bme280-raw", "BME280 not configured in system");
-         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_HARDWARE);
          return;
       end if;
       --
@@ -126,7 +125,7 @@ package body BBS.lisp.embed.bme280 is
       BME280_info.start_conversion(err);
       if err /= BBS.embed.i2c.none then
          BBS.lisp.error("read-bme280-raw", "Error starting conversion: " & BBS.embed.i2c.err_code'Image(err));
-         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_HARDWARE);
          return;
       end if;
       loop
@@ -136,47 +135,47 @@ package body BBS.lisp.embed.bme280 is
       end loop;
       if err /= BBS.embed.i2c.none then
          BBS.lisp.error("read-bme280-raw", "Error waiting for conversion: " & BBS.embed.i2c.err_code'Image(err));
-         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_HARDWARE);
          return;
       end if;
       BME280_info.read_data(err);
       if err /= BBS.embed.i2c.none then
          BBS.lisp.error("read-bme280-raw", "Error reading data: " & BBS.embed.i2c.err_code'Image(err));
-         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_HARDWARE);
          return;
       end if;
       BME280_info.get_raw(raw_temp, raw_press, raw_hum);
       std.put_line("BME280 Temperature " & Integer'Image(Integer(raw_temp)));
       std.put_line("BME280 Pressure " & Integer'Image(Integer(raw_press)));
       std.put_line("BME280 Humidity " & Integer'Image(Integer(raw_hum)));
-      flag := BBS.lisp.memory.alloc(head);
+      flag := BBS.lisp.conses.alloc(head);
       if not flag then
          BBS.lisp.error("read_bme280-raw", "Unable to allocate cons for results");
-         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_ALLOCCONS);
          return;
       end if;
-      BBS.lisp.cons_table(head).car := (kind => BBS.lisp.V_INTEGER, i =>
-                                                BBS.lisp.int32(raw_temp));
-      flag := BBS.lisp.memory.alloc(t1);
+      BBS.lisp.conses.set_car(head, (kind => BBS.lisp.V_INTEGER, i =>
+                                       BBS.lisp.int32(raw_temp)));
+      flag := BBS.lisp.conses.alloc(t1);
       if not flag then
-         BBS.lisp.memory.deref(head);
+         BBS.lisp.conses.deref(head);
          BBS.lisp.error("read_bme280-raw", "Unable to allocate cons for results");
-         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_ALLOCCONS);
          return;
       end if;
-      BBS.lisp.cons_table(head).cdr := BBS.lisp.evaluate.makeList(t1);
-      BBS.lisp.cons_table(t1).car := (kind => BBS.lisp.V_INTEGER, i =>
-                                                BBS.lisp.int32(raw_press));
-      flag := BBS.lisp.memory.alloc(t2);
+      BBS.lisp.conses.set_cdr(head, BBS.lisp.evaluate.makeList(t1));
+      BBS.lisp.conses.set_car(t1, (kind => BBS.lisp.V_INTEGER, i =>
+                                     BBS.lisp.int32(raw_press)));
+      flag := BBS.lisp.conses.alloc(t2);
       if not flag then
-         BBS.lisp.memory.deref(head);
+         BBS.lisp.conses.deref(head);
          BBS.lisp.error("read_bme280-raw", "Unable to allocate cons for results");
-         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_ALLOCCONS);
          return;
       end if;
-      BBS.lisp.cons_table(t1).cdr := BBS.lisp.evaluate.makeList(t2);
-      BBS.lisp.cons_table(t2).car := (kind => BBS.lisp.V_INTEGER, i =>
-                                                BBS.lisp.int32(raw_hum));
+      BBS.lisp.conses.set_cdr(t1, BBS.lisp.evaluate.makeList(t2));
+      BBS.lisp.conses.set_car(t2, (kind => BBS.lisp.V_INTEGER, i =>
+                                     BBS.lisp.int32(raw_hum)));
       e := BBS.lisp.evaluate.makeList(head);
    end;
    --

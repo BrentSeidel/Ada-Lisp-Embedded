@@ -2,6 +2,7 @@ with bbs.embed.i2c.due;
 use type bbs.embed.i2c.err_code;
 use type bbs.embed.i2c.due.port_id;
 with BBS.embed.i2c.BMP180;
+with BBS.lisp.conses;
 with BBS.lisp.evaluate;
 with BBS.lisp.memory;
 package body BBS.lisp.embed.bmp180 is
@@ -24,7 +25,7 @@ package body BBS.lisp.embed.bmp180 is
       --
       if bmp180_found = absent then
          BBS.lisp.error("read_bmp180", "BMP180 not configured in system");
-         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_HARDWARE);
          return;
       end if;
       --
@@ -38,7 +39,7 @@ package body BBS.lisp.embed.bmp180 is
       end loop;
       if err /= BBS.embed.i2c.none then
          BBS.lisp.error("read-bmp180", "BMP180 Error: " & BBS.embed.i2c.err_code'Image(err));
-         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_HARDWARE);
          return;
       else
          temperature := BMP180_info.get_temp(err)/10;
@@ -53,7 +54,7 @@ package body BBS.lisp.embed.bmp180 is
          end loop;
          if err /= BBS.embed.i2c.none then
             BBS.lisp.error("read-bmp180", "BMP180 Error: " & BBS.embed.i2c.err_code'Image(err));
-            e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
+            e := BBS.lisp.make_error(BBS.lisp.ERR_HARDWARE);
             return;
          else
             pressure := BMP180_info.get_press(err);
@@ -75,36 +76,36 @@ package body BBS.lisp.embed.bmp180 is
       --
       --  Now need to allocate two conses for the list
       --
-      flag := BBS.lisp.memory.alloc(temp_cons);
+      flag := BBS.lisp.conses.alloc(temp_cons);
       if not flag then
          BBS.lisp.error("read-bmp180", "Unable to allocate cons for temperature");
-         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_ALLOCCONS);
          return;
       end if;
-      flag := BBS.lisp.memory.alloc(press_cons);
+      flag := BBS.lisp.conses.alloc(press_cons);
       if not flag then
          BBS.lisp.error("read-bmp180", "Unable to allocate cons for pressure");
-         BBS.lisp.memory.deref(temp_cons);
-         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
+         BBS.lisp.conses.deref(temp_cons);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_ALLOCCONS);
          return;
       end if;
       --
       --  The conses have been successfully allocated.  Now build the list.
       --
-      BBS.lisp.cons_table(temp_cons).car := BBS.lisp.NIL_ELEM;
-      BBS.lisp.cons_table(temp_cons).cdr := BBS.lisp.evaluate.makeList(press_cons);
-      BBS.lisp.cons_table(press_cons).car := BBS.lisp.NIL_ELEM;
-      BBS.lisp.cons_table(press_cons).cdr := BBS.lisp.NIL_ELEM;
+      BBS.lisp.conses.set_car(temp_cons, BBS.lisp.NIL_ELEM);
+      BBS.lisp.conses.set_cdr(temp_cons, BBS.lisp.evaluate.makeList(press_cons));
+      BBS.lisp.conses.set_car(press_cons, BBS.lisp.NIL_ELEM);
+      BBS.lisp.conses.set_cdr(press_cons, BBS.lisp.NIL_ELEM);
       --
       --  Now, add the values to the list if they are present
       --
       if temp_flag then
-         BBS.lisp.cons_table(temp_cons).car := (kind => BBS.lisp.V_INTEGER,
-                                                i => BBS.lisp.int32(temperature*10));
+         BBS.lisp.conses.set_car(temp_cons, (kind => BBS.lisp.V_INTEGER,
+                                             i => BBS.lisp.int32(temperature*10)));
       end if;
       if press_flag then
-         BBS.lisp.cons_table(press_cons).car := (kind => BBS.lisp.V_INTEGER,
-                                                 i => BBS.lisp.int32(pressure));
+         BBS.lisp.conses.set_car(press_cons,(kind => BBS.lisp.V_INTEGER,
+                                             i => BBS.lisp.int32(pressure)));
       end if;
       e := BBS.lisp.evaluate.makeList(temp_cons);
    end;

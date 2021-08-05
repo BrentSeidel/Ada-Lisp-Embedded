@@ -114,7 +114,6 @@ package body BBS.lisp.embed is
       pin : Integer;
       rest : BBS.lisp.cons_index := s;
       value : BBS.embed.uint12;
-      ok : Boolean := True;
       ain  : BBS.embed.AIN.due.Due_AIN_record;
    begin
       --
@@ -124,31 +123,29 @@ package body BBS.lisp.embed is
       --
       --  Check if the first value is an integer element.
       --
-         if param.kind = BBS.lisp.V_INTEGER then
-            pin := Integer(param.i);
-      --
-      --  Check if the pin number is within range of the valid pins.  Note that
-      --  pin 4 cannot be used.
-      --
-            if (pin < BBS.embed.ain.due.AIN_Num'First) or (pin > BBS.embed.ain.due.AIN_Num'Last) then
-               BBS.lisp.error("read-analog", "Pin number is out of range.");
-               ok := False;
-            end if;
-         else
-            ok := False;
-            BBS.lisp.error("read-analog", "Parameter must be integer.");
+      if param.kind = BBS.lisp.V_INTEGER then
+         pin := Integer(param.i);
+         --
+         --  Check if the pin number is within range of the valid pins.  Note that
+         --  pin 4 cannot be used.
+         --
+         if (pin < BBS.embed.ain.due.AIN_Num'First) or (pin > BBS.embed.ain.due.AIN_Num'Last) then
+            BBS.lisp.error("read-analog", "Pin number is out of range.");
+            e := BBS.lisp.make_error(BBS.lisp.ERR_RANGE);
+            return;
          end if;
+      else
+         BBS.lisp.error("read-analog", "Parameter must be integer.");
+         e := BBS.lisp.make_error(BBS.lisp.ERR_WRONGTYPE);
+         return;
+      end if;
       --
       --  If the parameter is an integer and in range, then read the pin and try
       --  to return the value.
       --
-      if ok then
-         ain.channel := pin;
-         value := ain.get;
-         e := (kind => BBS.lisp.V_INTEGER, i => BBS.lisp.int32(value));
-      else
-         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
-      end if;
+      ain.channel := pin;
+      value := ain.get;
+      e := (kind => BBS.lisp.V_INTEGER, i => BBS.lisp.int32(value));
    end;
    --
    --  Read the value of one of the analog inputs.

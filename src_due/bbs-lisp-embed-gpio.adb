@@ -15,7 +15,6 @@ package body BBS.lisp.embed.gpio is
       pin : Integer;
       state : Integer;
       rest : BBS.lisp.cons_index := s;
-      ok : Boolean := True;
    begin
       --
       --  Get the first and second values
@@ -29,7 +28,8 @@ package body BBS.lisp.embed.gpio is
          pin := Integer(pin_elem.i);
       else
          BBS.lisp.error("set-pin", "Pin number must be integer.");
-         ok := False;
+         e := BBS.lisp.make_error(BBS.lisp.ERR_WRONGTYPE);
+         return;
       end if;
       --
       --  Check if the pin state is an integer element.
@@ -38,7 +38,8 @@ package body BBS.lisp.embed.gpio is
          state := Integer(state_elem.i);
       else
          BBS.lisp.error("set-pin", "Pin state must be integer.");
-         ok := False;
+         e := BBS.lisp.make_error(BBS.lisp.ERR_WRONGTYPE);
+         return;
       end if;
       --
       --  Check if the pin number is within range of the valid pins.  Note that
@@ -46,20 +47,16 @@ package body BBS.lisp.embed.gpio is
       --
       if (pin < 0) or (pin > gpio_max_pin) or (pin = 4) then
          BBS.lisp.error("set-pin", "Pin number is out of range.");
-         ok := False;
+         e := BBS.lisp.make_error(BBS.lisp.ERR_RANGE);
+         return;
       end if;
       --
       --  If everything is OK, then set the pin
       --
-      if ok then
-         if state = 0 then
-            gpio_pin(pin).all.set(0);
-         else
-            gpio_pin(pin).all.set(1);
-         end if;
+      if state = 0 then
+         gpio_pin(pin).all.set(0);
       else
-         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
-         return;
+         gpio_pin(pin).all.set(1);
       end if;
       e := BBS.lisp.NIL_ELEM;
    end;
@@ -73,7 +70,6 @@ package body BBS.lisp.embed.gpio is
       pin : Integer;
       rest : BBS.lisp.cons_index := s;
       value : BBS.embed.Bit;
-      ok : Boolean := True;
    begin
       --
       --  Get the first value
@@ -90,22 +86,20 @@ package body BBS.lisp.embed.gpio is
       --
          if (pin < 0) or (pin > gpio_max_pin) or (pin = 4) then
             BBS.lisp.error("read-pin", "Pin number is out of range.");
-            ok := False;
+            e := BBS.lisp.make_error(BBS.lisp.ERR_RANGE);
+            return;
          end if;
       else
-         ok := False;
          BBS.lisp.error("read-pin", "Parameter must be integer.");
+         e := BBS.lisp.make_error(BBS.lisp.ERR_WRONGTYPE);
+         return;
       end if;
       --
       --  If the parameter is an integer and in range, then read the pin and try
       --  to return the value.
       --
-      if ok then
-         value := gpio_pin(pin).all.get;
-         e := (kind => BBS.lisp.V_INTEGER, i => BBS.lisp.int32(value));
-      else
-         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
-      end if;
+      value := gpio_pin(pin).all.get;
+      e := (kind => BBS.lisp.V_INTEGER, i => BBS.lisp.int32(value));
    end;
    --
    --  Set the mode (input or output) of a digital pin.  Two parameters are read.
@@ -118,7 +112,6 @@ package body BBS.lisp.embed.gpio is
       pin : Integer;
       state : Integer;
       rest : BBS.lisp.cons_index := s;
-      ok : Boolean := True;
    begin
       --
       --  Get the first value
@@ -135,7 +128,8 @@ package body BBS.lisp.embed.gpio is
          pin := Integer(pin_elem.i);
       else
          BBS.lisp.error("pin-mode", "Pin number must be integer.");
-         ok := False;
+         e := BBS.lisp.make_error(BBS.lisp.ERR_WRONGTYPE);
+         return;
       end if;
       --
       --  Check if the pin state is an integer element.
@@ -144,7 +138,8 @@ package body BBS.lisp.embed.gpio is
          state := Integer(mode_elem.i);
       else
          BBS.lisp.error("pin-mode", "Pin mode must be integer.");
-         ok := False;
+         e := BBS.lisp.make_error(BBS.lisp.ERR_WRONGTYPE);
+         return;
       end if;
       --
       --  Check if the pin number is within range of the valid pins.  Not that
@@ -152,21 +147,18 @@ package body BBS.lisp.embed.gpio is
       --
       if (pin < 0) or (pin > gpio_max_pin) or (pin = 4) then
          BBS.lisp.error("pin-mode", "Pin number is out of range.");
-         ok := False;
+         e := BBS.lisp.make_error(BBS.lisp.ERR_RANGE);
+         return;
       end if;
       --
       --  If everything is OK, then set the pin
       --
-      if ok then
-         if state = 0 then
-            gpio_pin(pin).all.config(BBS.embed.GPIO.Due.gpio_input);
-         else
-            gpio_pin(pin).all.config(BBS.embed.GPIO.Due.gpio_output);
-         end if;
-         e := BBS.lisp.NIL_ELEM;
+      if state = 0 then
+         gpio_pin(pin).all.config(BBS.embed.GPIO.Due.gpio_input);
       else
-         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
+         gpio_pin(pin).all.config(BBS.embed.GPIO.Due.gpio_output);
       end if;
+      e := BBS.lisp.NIL_ELEM;
    end;
    --
    --
@@ -184,7 +176,6 @@ package body BBS.lisp.embed.gpio is
       pin : Integer;
       pullup : Boolean;
       rest : BBS.lisp.cons_index := s;
-      ok : Boolean := True;
    begin
       --
       --  Get the first value
@@ -201,7 +192,8 @@ package body BBS.lisp.embed.gpio is
          pin := Integer(pin_elem.i);
       else
          BBS.lisp.error("pin-pullup", "Pin number must be integer.");
-         ok := False;
+         e := BBS.lisp.make_error(BBS.lisp.ERR_WRONGTYPE);
+         return;
       end if;
       --
       --  Check if the pin state is an integer element.
@@ -210,7 +202,8 @@ package body BBS.lisp.embed.gpio is
          pullup := pullup_elem.b;
       else
          BBS.lisp.error("pin-pullup", "Pin pullup must be boolean.");
-         ok := False;
+         e := BBS.lisp.make_error(BBS.lisp.ERR_WRONGTYPE);
+         return;
       end if;
       --
       --  Check if the pin number is within range of the valid pins.  Not that
@@ -218,20 +211,17 @@ package body BBS.lisp.embed.gpio is
       --
       if (pin < 0) or (pin > gpio_max_pin) or (pin = 4) then
          BBS.lisp.error("pin-pullup", "Pin number is out of range.");
-         ok := False;
+         e := BBS.lisp.make_error(BBS.lisp.ERR_RANGE);
+         return;
       end if;
       --
       --  If everything is OK, then set the pullup resistor for the pin
       --
-      if ok then
-         if pullup then
-            gpio_pin(pin).all.pullup(1);
-         else
-            gpio_pin(pin).all.pullup(0);
-         end if;
-         e := BBS.lisp.NIL_ELEM;
+      if pullup then
+         gpio_pin(pin).all.pullup(1);
       else
-         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
+         gpio_pin(pin).all.pullup(0);
       end if;
+      e := BBS.lisp.NIL_ELEM;
    end;
 end;
