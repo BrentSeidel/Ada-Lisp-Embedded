@@ -15,7 +15,6 @@ package body BBS.lisp.embed.gpio is
       pin : Integer;
       state : Integer;
       rest : BBS.lisp.cons_index := s;
-      ok : Boolean := True;
    begin
       --
       --  Get the first and second values
@@ -29,7 +28,8 @@ package body BBS.lisp.embed.gpio is
          pin := Integer(pin_elem.i);
       else
          error("set-pin", "Pin number must be integer.");
-         ok := False;
+         e := make_error(ERR_WRONGTYPE);
+         return;
       end if;
       --
       --  Check if the pin state is an integer element.
@@ -38,7 +38,8 @@ package body BBS.lisp.embed.gpio is
          state := Integer(state_elem.i);
       else
          error("set-pin", "Pin state must be integer.");
-         ok := False;
+         e := make_error(ERR_WRONGTYPE);
+         return;
       end if;
       --
       --  Check if the pin number is within range of the valid pins.  Note that
@@ -46,21 +47,18 @@ package body BBS.lisp.embed.gpio is
       --
       if (pin < 0) or (pin > gpio_max_pin) or (pin = 4) then
          error("set-pin", "Pin number is out of range.");
-         ok := False;
+         e := make_error(ERR_RANGE);
+         return;
       end if;
       --
       --  If everything is OK, then set the pin
       --
-      if ok then
-         if state = 0 then
-            gpio_pin(pin).set(0);
-         else
-            gpio_pin(pin).set(1);
-         end if;
-         e := NIL_ELEM;
+      if state = 0 then
+         gpio_pin(pin).set(0);
       else
-         e := make_error(ERR_UNKNOWN);
+         gpio_pin(pin).set(1);
       end if;
+      e := NIL_ELEM;
    end;
    --
    --  Set the state of a digital pin  Two parameters are read.  The first
@@ -72,7 +70,6 @@ package body BBS.lisp.embed.gpio is
       pin : Integer;
       rest : cons_index := s;
       value : BBS.embed.Bit;
-      ok : Boolean := True;
    begin
       --
       --  Get the first value
@@ -89,22 +86,20 @@ package body BBS.lisp.embed.gpio is
       --
          if (pin < 0) or (pin > gpio_max_pin) or (pin = 4) then
             error("read-pin", "Pin number is out of range.");
-            ok := False;
+            e := make_error(ERR_RANGE);
+            return;
          end if;
       else
-         ok := False;
          error("read-pin", "Parameter must be integer.");
+         e := make_error(ERR_WRONGTYPE);
+         return;
       end if;
       --
       --  If the parameter is an integer and in range, then read the pin and try
       --  to return the value.
       --
-      if ok then
-         value := gpio_pin(pin).get;
-         e := (kind => BBS.lisp.V_INTEGER, i => BBS.lisp.int32(value));
-      else
-         e := make_error(ERR_UNKNOWN);
-      end if;
+      value := gpio_pin(pin).get;
+      e := (kind => BBS.lisp.V_INTEGER, i => BBS.lisp.int32(value));
    end;
    --
    --  Set the mode (input or output) of a digital pin.  Two parameters are read.
@@ -117,7 +112,6 @@ package body BBS.lisp.embed.gpio is
       pin : Integer;
       state : Integer;
       rest : cons_index := s;
-      ok : Boolean := True;
    begin
       --
       --  Get the first value
@@ -134,7 +128,8 @@ package body BBS.lisp.embed.gpio is
          pin := Integer(pin_elem.i);
       else
          error("pin-mode", "Pin number must be integer.");
-         ok := False;
+         e := make_error(ERR_WRONGTYPE);
+         return;
       end if;
       --
       --  Check if the pin state is an integer element.
@@ -143,7 +138,8 @@ package body BBS.lisp.embed.gpio is
          state := Integer(mode_elem.i);
       else
          error("pin-mode", "Pin mode must be integer.");
-         ok := False;
+         e := make_error(ERR_WRONGTYPE);
+         return;
       end if;
       --
       --  Check if the pin number is within range of the valid pins.  Not that
@@ -151,21 +147,18 @@ package body BBS.lisp.embed.gpio is
       --
       if (pin < 0) or (pin > gpio_max_pin) or (pin = 4) then
          error("pin-mode", "Pin number is out of range.");
-         ok := False;
+         e := make_error(ERR_RANGE);
+         return;
       end if;
       --
       --  If everything is OK, then set the pin
       --
-      if ok then
-         if state = 0 then
-            gpio_pin(pin).set_dir(gpio_name(pin).all, BBS.embed.GPIO.Linux.input);
-         else
-            gpio_pin(pin).set_dir(gpio_name(pin).all, BBS.embed.GPIO.Linux.output);
-         end if;
-         e := NIL_ELEM;
+      if state = 0 then
+         gpio_pin(pin).set_dir(gpio_name(pin).all, BBS.embed.GPIO.Linux.input);
       else
-         e := make_error(ERR_UNKNOWN);
+         gpio_pin(pin).set_dir(gpio_name(pin).all, BBS.embed.GPIO.Linux.output);
       end if;
+      e := NIL_ELEM;
    end;
    --
 end;
