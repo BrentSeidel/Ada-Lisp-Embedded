@@ -1,6 +1,3 @@
---with BBS.lisp;
---use type BBS.lisp.value_type;
---use type BBS.lisp.int32;
 with BBS.lisp.evaluate;
 with BBS.embed;
 with bbs.embed.i2c;
@@ -16,25 +13,22 @@ package body BBS.lisp.embed.mcp23017 is
                             device : out BBS.embed.i2c.MCP23017.MCP23017_record;
                             l_err :out  BBS.lisp.error_code)
                             return Boolean is
-      addr : BBS.lisp.int32;
+      addr : Integer;
    begin
-      device := MCP23017_0_info;
+      device := MCP23017_info(0);
       if p.kind = BBS.lisp.V_INTEGER then
-         addr := p.i;
-         l_err := BBS.lisp.ERR_ADDON;  -- Should be ignored
-         if (addr = 0) and (mcp23017_0_found /= absent) then
-            device := MCP23017_0_info;
-            return True;
-         elsif (addr = 2) and (mcp23017_2_found /= absent) then
-            device := MCP23017_2_info;
-            return True;
-         elsif (addr = 6) and (mcp23017_6_found /= absent) then
-            device := MCP23017_6_info;
-            return True;
-         else
-            BBS.lisp.error("process_address", "Address must be 0, 2, or 6.");
+         addr := Integer(p.i);
+         l_err := BBS.lisp.ERR_NONE;  -- Should be ignored
+         if (addr < mcp23017_found'first) or (addr > mcp23017_found'last) then
+            BBS.lisp.error("process_address", "Address must be in range 0-7.");
             l_err := BBS.lisp.ERR_RANGE;
          end if;
+         if mcp23017_found(addr) /= absent then
+            device := MCP23017_info(addr);
+            return True;
+         end if;
+         BBS.lisp.error("process_address", "Requested MCP23017 not installed.");
+         l_err := BBS.lisp.ERR_HARDWARE;
       else
          BBS.lisp.error("process_address", "Address must be integer.");
          l_err := BBS.lisp.ERR_WRONGTYPE;

@@ -15,7 +15,7 @@ package body BBS.lisp.embed.mcp23017 is
                             return Boolean is
       addr : Integer;
    begin
-      l_err := BBS.lisp.ERR_ADDON;  -- Should be ignored
+      l_err := BBS.lisp.ERR_NONE;  -- Should be ignored
       if p.kind = BBS.lisp.V_INTEGER then
          addr := Integer(p.i);
          if (addr < mcp23017_found'first) or (addr > mcp23017_found'last) then
