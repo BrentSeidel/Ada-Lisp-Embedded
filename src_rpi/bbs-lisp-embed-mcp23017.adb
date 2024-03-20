@@ -38,14 +38,14 @@ package body BBS.lisp.embed.mcp23017 is
    --  Process the data parameter.  This should always be a 16 bit unsigned integer
    --
    function process_data(p : BBS.lisp.element_type;
-                         data : out BBS.embed.uint16;
+                         data : out BBS.uint16;
                          l_err : out BBS.lisp.error_code)
                          return Boolean is
    begin
       data := 0;
       if p.kind = BBS.lisp.V_INTEGER then
          if p.i >= 0 and p.i <= 16#FFFF# then
-            data := BBS.embed.uint16(p.i);
+            data := BBS.uint16(p.i);
             l_err := BBS.lisp.ERR_ADDON;  -- Should be ignored
             return True;
          else
@@ -69,7 +69,7 @@ package body BBS.lisp.embed.mcp23017 is
    procedure mcp23017_dir(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index)is
       rest     : BBS.lisp.cons_index := s;
       param    : BBS.lisp.element_type;
-      data     : BBS.embed.uint16;
+      data     : BBS.uint16;
       MCP23017 : aliased BBS.embed.i2c.MCP23017.MCP23017_record;
       code     : BBS.lisp.error_code;
       err      : BBS.embed.i2c.err_code;
@@ -114,7 +114,7 @@ package body BBS.lisp.embed.mcp23017 is
    procedure mcp23017_pullup(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index) is
       rest     : BBS.lisp.cons_index := s;
       param    : BBS.lisp.element_type;
-      data     : BBS.embed.uint16;
+      data     : BBS.uint16;
       MCP23017 : aliased BBS.embed.i2c.MCP23017.MCP23017_record;
       code     : BBS.lisp.error_code;
       err      : BBS.embed.i2c.err_code;
@@ -159,7 +159,7 @@ package body BBS.lisp.embed.mcp23017 is
    procedure mcp23017_polarity(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index) is
       rest     : BBS.lisp.cons_index := s;
       param    : BBS.lisp.element_type;
-      data     : BBS.embed.uint16;
+      data     : BBS.uint16;
       MCP23017 : aliased BBS.embed.i2c.MCP23017.MCP23017_record;
       code     : BBS.lisp.error_code;
       err      : BBS.embed.i2c.err_code;
@@ -203,7 +203,7 @@ package body BBS.lisp.embed.mcp23017 is
    procedure mcp23017_data(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index) is
       rest     : BBS.lisp.cons_index := s;
       param    : BBS.lisp.element_type;
-      data     : BBS.embed.uint16;
+      data     : BBS.uint16;
       MCP23017 : aliased BBS.embed.i2c.MCP23017.MCP23017_record;
       code     : BBS.lisp.error_code;
       err      : BBS.embed.i2c.err_code;
@@ -247,7 +247,7 @@ package body BBS.lisp.embed.mcp23017 is
    procedure mcp23017_read(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index) is
       rest     : BBS.lisp.cons_index := s;
       param    : BBS.lisp.element_type;
-      data     : BBS.embed.uint16;
+      data     : BBS.uint16;
       MCP23017 : aliased BBS.embed.i2c.MCP23017.MCP23017_record;
       code     : BBS.lisp.error_code;
       err      : BBS.embed.i2c.err_code;

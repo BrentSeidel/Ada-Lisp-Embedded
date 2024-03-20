@@ -1,6 +1,6 @@
 with Ada.Real_Time;
 use type Ada.Real_Time.Time;
-with BBS.embed.GPIO.Due;
+with BBS.embed.GPIO.Linux;
 with BBS.lisp.evaluate;
 package body BBS.lisp.embed.stepper is
    --

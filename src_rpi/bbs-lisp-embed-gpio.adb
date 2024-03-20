@@ -69,7 +69,7 @@ package body BBS.lisp.embed.gpio is
       param : element_type;
       pin : Integer;
       rest : cons_index := s;
-      value : BBS.embed.Bit;
+      value : BBS.Bit;
    begin
       --
       --  Get the first value

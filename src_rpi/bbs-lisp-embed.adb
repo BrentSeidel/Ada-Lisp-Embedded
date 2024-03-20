@@ -62,7 +62,7 @@ package body BBS.lisp.embed is
    --
    procedure init_i2c is
      err  : BBS.embed.i2c.err_code;
-     temp : BBS.embed.uint8;
+     temp : BBS.uint8;
      addr : BBS.embed.addr7;
      i2c_bus : BBS.embed.i2c.i2c_interface := BBS.embed.i2c.i2c_interface(i2c_ptr);
    begin
