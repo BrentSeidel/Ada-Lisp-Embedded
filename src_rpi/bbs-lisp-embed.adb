@@ -76,9 +76,9 @@ package body BBS.lisp.embed is
          if err = BBS.embed.i2c.NONE then
             MCP23017_info(i).configure(i2c_bus, addr, err);
             MCP23017_found(i) := True;
-            put_line("MCP23017 Found at address " & Integer'image(Integer(addr)));
+            put_line("MCP23017(" & Integer'Image(i) & ") Found at address " & Integer'image(Integer(addr)));
          else
-            put_line("MCP23017 Not found at address " & Integer'image(Integer(addr))
+            put_line("MCP23017(" & Integer'Image(i) & ") Not found at address " & Integer'image(Integer(addr))
                      & " - " & BBS.embed.i2c.err_code'Image(err));
             MCP23017_found(i) := False;
          end if;

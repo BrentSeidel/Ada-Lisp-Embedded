@@ -4,7 +4,7 @@ package BBS.lisp.embed.mcp23017 is
    --  Set direction of bits in the MCP23017 port.
    --  (mcp23017-dir addr dir)
    --    addr is the device address
-   --    dir is the direction (0-read, 1-write) bit encoded into a 16 bit
+   --    dir is the direction (0-output, 1-input) bit encoded into a 16 bit
    --      unsigned integer
    --
    procedure mcp23017_dir(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index);
